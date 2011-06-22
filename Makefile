@@ -18,7 +18,7 @@
 # Kevin van der Vlist - kevin@kevinvandervlist.nl
 # Paul Sohier - paul@paulsohier.nl
 
-DIRS=dictaat vragen antwoorden presentatie web verslag_abdelghany stats
+DIRS=dictaat vragen antwoorden presentatie
 
 all:
 	for d in $(DIRS); do (cd $$d; $(MAKE) ); done

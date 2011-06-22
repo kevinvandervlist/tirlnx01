@@ -18,7 +18,7 @@
 # Kevin van der Vlist - kevin@kevinvandervlist.nl
 # Paul Sohier - paul@paulsohier.nl
 
-DIRS=voorlichting week1 week2 week3 week4 week5 week6 week7
+DIRS=week1 week2 week3 week4 week5 week6 week7
 
 all:
 	for d in $(DIRS); do (cd $$d; $(MAKE) ); done

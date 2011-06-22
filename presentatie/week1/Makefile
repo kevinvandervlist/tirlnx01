@@ -21,7 +21,7 @@
 # Vars
 FILE=presentatie
 WEEK=week1
-SCP=scp -i ../../id_rsa_pdf 
+SCP=scp -i ../../../id_rsa_pdf 
 DEST=linux@hosthuis.nl:/var/www/linux/.
 
 MAKE=make
