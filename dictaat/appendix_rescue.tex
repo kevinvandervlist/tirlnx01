@@ -1,0 +1,82 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Rescue}\label{app.rescue}
+Ook \emph{Linux} is een systeem waar door verschillende fouten er een slecht of totaal niet werkend systeem kan optreden. Door de structurele opzet van veiligheid zul je echter wel fysieke toegang moeten hebben voordat je een poging tot herstel kan wagen. Wanneer je fysiek met het systeem aan de slag kan, zijn er wel verschillende mogelijkheden om het systeem te redden. Is er geen mogelijkheid om toegang te hebben tot het fysieke systeem, dan ben snel verloren.
+
+\section{Nieuwe harddisk}
+Wanneer er een nieuwe harddisk in het systeem wordt gedaan, zou het kunnen zijn dat het systeem niet meer opstart. Wanneer dit het geval is, dien je na te denken over wat je nu precies hebt toegevoegd, en in hoeverre dit verschilt van de originele situatie. 
+
+Wanneer de kernel sata devices gaat selecteren, zullen alle beschikbare devices worden geenumereerd. Dit resulteert in de volgende tabel. De volgorde is afhankelijk van de volgorde waarop de schijven worden aangesproken.\\
+\begin{tabular}[t]{ll}
+  \hline
+  Device node & Betekenis\\
+  \hline
+  /dev/sda & Disk 1\\
+  /dev/sdb & Disk 2\\
+  /dev/sdX & Disk X\\
+\end{tabular}
+
+Om het overzicht compleet te houden zullen we ook een kleine enumeratie geven van een systeem met \emph{IDE} schijven. Vroeger werden deze \emph{/dev/hdX} genoemd, maar sinds de Linux kernel IDE schijven ook door \emph{libata} laat afhandelen hebben deze ook een \emph{/dev/sdX} naam gekregen. In de praktijk levert het de volgende situatie op.\\
+\begin{tabular}[t]{ll}
+  \hline
+  Device node & Betekenis\\
+  \hline
+  /dev/sda & Primary master\\
+  /dev/sdb & Primary slave\\
+  /dev/sdc & Secundary master\\
+  /dev/sdd & Secundary slave\\
+\end{tabular}
+
+Nu er extra device(s) zijn toegevoegd, zou het zo kunnen zijn dat de enumeratie anders is. Het zou kunnen zijn dat het systeem niet meer boot, met een \emph{GRUB ERROR 11}. Dit betekend dat er een filesystem is gemount, maar er geen kernel kan worden gevonden. Dit komt meestal omdat de device volgorde is gewijzigd. 
+
+Om dit te herstellen zullen we \emph{GRUB} moeten laten starten met een aangepaste boot optie. zie \ref{grub.boot.modify} \emph{GRUB boot wijzigen}  om te kijken hoe dit moet. Zorg dat je nieuwe boot device het correcte oude \emph{boot device} is, en pas het daarna permanent aan. Het systeem zal nu opstarten. 
+
+Wanneer er nu nog word geklaagd over het niet kunnen vinden van het \emph{root filesystem} dien je de file \emph{/etc/fstab} te wijzigen naar de nieuwe situatie. 
+
+Bij deze paragraaf is wel een kanttekening te maken. \emph{Slackware} is een erg traditionele distributie, welke vaak de kat uit de boom kijkt bij nieuwigheden, soms zelfs jarenlang. Practisch heeft dit gevolgend dat er vaak relatief oude, maar bewezen technieken gebruik worden. 
+
+Dit houd echter in dat nieuwe trends, zoals het gebruik van \emph{UUID's}\index{uuid} iets is wat standaard ongebruikt is. Men kan het zelf configureren, maar het zal standaard niet in gebruik zijn. Nu cre\"{e}ert het gebruik van \emph{UUID's} een scenario waar het eerder beschreven systeem zich niet kan voordoen, omdat ieder device een gegarandeerd uniek ID krijgt. Voor de werking hiervan willen we jullie naar \emph{Universally Unique Identifier}\cite{bib.uuid} verwijzen. 
+
+\section{Root password gecompromitteerd}
+Opnieuw installeren. Je systeem is niet meer veilig. Breng alle gerelateerde mensen op de hoogte van je probleem. Ga ervan uit dat al je data is gekopieerd en dat alle NAW gegevens zijn verkocht. Zoek uit hoe dit zich heeft kunnen voordoen, en neem voorzorgsmaatregelen om dit te voorkomen. 
+
+Geen enkel commando hoeft meer correcte informatie terug te geven. Een hacker kan in theorie ieder commando aanpassen zodat het informatie naar zijn wensen teruggeeft. Dit kan gaan van een simpele aanpassing naar \texttt{w} of \texttt{who}, maar ook naar commando's als \texttt{halt} en \texttt{reboot}.\index{w}\index{who}\index{halt}\index{reboot}
+
+\section{Root password vergeten}
+Dit is iets wat niet slim is, maar het is geen ramp. Om het syteem te kunnen redden zul je het wel moeten herstarten. Gebruik de sectie \ref{grub.boot.modify} \emph{GRUB boot wijzigen} om het systeem te starten met een gewijzgde parameter. Wanneer de parameter niet bestaat, voeg hem dan toe aan de \emph{kernel} regel. 
+\begin{lstlisting}
+init=/bin/bash
+\end{lstlisting}
+Na enkele seconden zie je nu de bekende \emph{BASH} shell. Gebruik deze om handmatig, of met \emph{passwd} het root wachtwoord te laten wijzigen. Start nu het programma \emph{sync}, wacht 3 seconden, en start dan opnieuw op. 
+
+\section{Windows geinstalleerd - Linux weg}
+Onze vrienden van Microsoft zijn zo sociaal om bewust een jarenlange bug te laten bestaan. Bij een installatie van Windows word er niet gekeken of er eventueel al een besturingssyteem te vinden is, en zoja; of deze gebruik maakt van de \emph{MBR}\index{mbr} van de harde schijf. Hierdoor zal de bootloader worden overschreven met een speciale versie wan Windows, welke dus je Linux installatie negeert. Dit repareren vereist het starte van een Linux cd, waarna je grub opnieuw laat installeren. Zie hiervoor \ref{grub.boot.install} \emph{grub installeren} voor \emph{Slackware} specifieke instructies. De meeste systemen voldoen met het draaien van het volgende commando:
+\begin{lstlisting}
+grub-install /dev/sda
+\end{lstlisting}
+Hier geld natuurlijk weer dat /dev/sda het goede device moet zijn. Beantwoord eventuele vragen, en geniet van een werkende installer. Controleer wel even over er een Windows entry te vinden is, of voeg deze toe. Een voorbeeld van zo'n \emph{chainloader}\index{chainloader} is als volgt. We gaan uit van disk 2, partitie 3.
+\begin{lstlisting}
+title Windows savedefault 0,0
+root (hd1,2)
+savedefault
+makeactive
+chainloader +1
+\end{lstlisting}

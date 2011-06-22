@@ -1,0 +1,129 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Inrichting}
+Dit hoofdstuk gaat over de schijf indeling van een \emph{Linux} systeem. We bedoelen niet het type \emph{file system} waarmee de harde schijf is ingedeeld, maar juist de structuur die wordt gebruikt om data \emph{op} de schijf te benaderen. Er zijn hier strikte richtlijnen voor opgesteld. Het volgen van deze richtlijnen wordt dan ook door veel \emph{distributies} gevolgd, al zijn er soms kleine implementatieverschillen. 
+
+\section{Inleiding}
+Om door een \emph{file system} heen te kunnen navigeren is het handig dat de basis navigatie bekend is bij de lezer. Lees daarom minimaal de \emph{NAME} en de \emph{DESCRIPTION} uit de \emph{manual} van de volgende commando's:
+\begin{itemize}
+  \item[1.] \texttt{cd}\index{cd} - \textbf{C}hange \textbf{D}irectory
+  \item[2.] \texttt{cp}\index{cp} - \textbf{C}o\textbf{p}y
+  \item[3.] \texttt{ls}\index{ls} - \textbf{L}i\textbf{s}t
+  \item[4.] \texttt{mkdir}\index{mkdir} - \textbf{M}a\textbf{k}e \textbf{Dir}ectory
+  \item[5.] \texttt{pwd}\index{pwd} - \textbf{P}rint \textbf{W}orking \textbf{D}irectory
+  \item[6.] \texttt{rm}\index{rm} - \textbf{R}e\textbf{m}ove
+  \item[7.] \texttt{rmdir}\index{rmdir} - \textbf{R}e\textbf{m}ove \textbf{Dir}ectory
+  \item[8.] \texttt{df}\index{df} - \textbf{D}isk \textbf{F}ree
+\end{itemize}
+
+\section{Linux Standard Base}
+De \emph{Linux Standard Base}, of \emph{LSB}\index{LSB}\cite{bib.lsb}, is een standaard die binnen de \emph{Linux} wereld is opgestart. Men wilde hiermee een duidelijke richtlijn specificeren over de volgende onderwerpen:
+\begin{itemize}
+  \item[1.] \emph{ELF}\footnote{\emph{Executeable and Linking Format - Binary interface standaard}} specificatie.
+  \item[2.] Standaard \emph{libraries}. 
+  \item[3.] Standaard \emph{commando's}. 
+  \item[4.] \emph{File System hi\"{e}rarchie}. 
+  \item[5.] \emph{Lokalisatie} mogelijkheden van binaries.
+  \item[6.] \emph{Systeem initialisatie}\footnote{\emph{Run levels}, \emph{init scripts}, \ldots}.
+  \item[7.] \emph{User} en \emph{groep} definities.
+  \item[8.] Print framework\footnote{\emph{CUPS}}.
+  \item[9.] \emph{Interpreters}\footnote{\texttt{python}\index{python}, \texttt{perl}\index{perl}, \ldots}.
+  \item[10.] Basis \emph{X Window} systeem.
+\end{itemize}
+De meeste punten resulteren in droge opsommingen over wat er precies aanwezig moet zijn op een systeem. De informatie is duidelijk gedocumenteerd, zodat dit zelf opgezocht kan worden wanneer het nodig is. Het is echter wel handig om te weten hoe punt \emph{4} precies in elkaar zit. Dit heeft namelijk veel praktische gevolgen voor het gebruik van een \emph{LSB}-gecertificeerd systeem. 
+
+\section{File System Hi\"{e}rarchie}
+Een \emph{Linux} \emph{file systeem} is te representeren als een grote boom. De root node van deze tree is \emph{/}, welke 0-n\footnote{n is afhankelijk van het filesystem. \emph{EXT3} heeft bijvoorbeeld een limiet van 31998.} verschillende \emph{child nodes}\footnote{Directe kinderen, dus bestanden of mappen \emph{in} een \emph{parent}, een map.} bevat. Deze \emph{child nodes} kunnen zelf ook weer \emph{child nodes} hebben. Dit is te visualiseren in figuur \ref{fs_tree}. Hier is een bepaalde \emph{node} \emph{kevin} te zien, welke dus een diepte niveau van 3 heeft.
+\begin{itemize}
+  \item[1.] \emph{/}
+  \item[2.] \emph{/home}
+  \item[3.] \emph{/home/kevin}
+\end{itemize}
+
+\begin{figure}[H]
+  \setlength{\unitlength}{1mm}
+  \begin{center}
+    \begin{picture}(90, 50)
+      \thicklines
+      % lvl 0
+      % Root node
+      \put(30,45){\circle{15}}
+      \put(30,45){\makebox(0,1){\texttt{/}}}
+      % Arrows
+      \put(30,38){\vector(-3,-2){10}}
+      \put(30,38){\vector(3,-2){10}}
+
+      % lvl 1
+      % usr
+      \put(15,25){\circle{15}}
+      \put(15,25){\makebox(0,1){\texttt{usr}}}
+      % Arrows
+      \put(15,18){\vector(-3,-2){10}}
+      % home
+      \put(45,25){\circle{15}}
+      \put(45,25){\makebox(0,1){\texttt{home}}}
+      % Arrows
+      \put(45,18){\vector(-3,-2){10}}
+      \put(45,18){\vector(0,-2){5}}
+      \put(45,18){\vector(3,-2){10}}
+
+      % lvl 2
+      % usr/bin
+      \put(0,5){\circle{15}}
+      \put(0,5){\makebox(0,1){\texttt{bin}}}
+      % home/femke
+      \put(30,5){\circle{15}}
+      \put(30,5){\makebox(0,1){\texttt{femke}}}
+      % home/kevin
+      \put(45,5){\circle{15}}
+      \put(45,5){\makebox(0,1){\texttt{kevin}}}
+      % home/paul
+      \put(60,5){\circle{15}}
+      \put(60,5){\makebox(0,1){\texttt{paul}}}
+    \end{picture}
+  \end{center}
+  \caption{Een file system tree}
+  \label{fs_tree}
+\end{figure}
+
+Alle \emph{nodes} op niveau 2 hebben echter een speciale betekenis. Ze bevatten allemaal \emph{content} die aan hun beschrijving voldoet. Dit maakt het gemakkelijk en voorspelbaar om bepaalde kritieke bestanden te vinden, te gebruiken of aan te passen. Een goed voorbeeld om duidelijk te maken wat er precies bedoeld wordt zijn configuratie bestanden. Deze zijn in principe altijd in \emph{/etc} terug te vinden. De volgende \emph{directories} zijn beschreven met hierbij hun doel:
+
+\begin{tabular}[t]{ll}
+  \hline
+  Directory & Beschrijving\\
+  \hline
+  /bin & Basis user-gerelateerde programma's en scripts, zoals \texttt{ls}\index{ls}.\\
+  /boot & \emph{Bootloader} (\emph{LILO}, \emph{GRUB}) files.\\
+  /dev & \emph{Block-,} en \emph{Character devices}.\\
+  /etc & Configuratie en systeem initialisatie.\\
+  /home & Gebruikersmappen (geen \emph{root}).\\
+  /lib & Belangrijke libraries (\emph{kernel} modules, \emph{libc}).\\
+  /mnt & Directory voor generieke \emph{mountpoints}.\\
+  /opt & Optionele packages. \emph{Slackware} installeert \emph{KDE} hier.\\
+  /proc & \emph{Proc} filesystem voor \emph{kernel} datastructuren.\\
+  /root & \emph{Root's} home directory.\\
+  /sbin & Systeem programma's, nodig voor startup of \emph{root}.\\
+  /tmp & Tijdelijke bestanden, iedereen heeft lees + schrijf rechten hier.\\
+  /usr & Gebruikers-gerelateerde programma's (browser, \emph{X11}, \ldots).\\
+  /var & Systeem log files, \emph{lock files}, \emph{mail spools} en \emph{printer spools}.\\
+\end{tabular}
+
+Als tradities had de ``root'' user zijn home directory oorspronkelijk in \emph{/}, maar veel distributies gebruiken tegenwoordig \emph{/root/}\cite{bib.root}. Dit heeft dus oorspronkelijk niets te maken met de beveiliging van het systeem.

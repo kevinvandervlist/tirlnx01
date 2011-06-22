@@ -1,0 +1,194 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Linux networking}\label{h.netwerk}
+\emph{Linux} is enorm geschikt om te gebruiken in netwerk gerelateerde toepassingen. Doordat het een \emph{multi-user} systeem is, is het erg gemakkelijk om gebruikers via het netwerk diensten aan te bieden. Voordat een systeem bereikbaar is moet er natuurlijk wel een netwerk configuratie gedaan worden. Daarna willen we een paar veel gebruikte services aanduiden. 
+
+\section{Configuratie}
+Het netwerk kan op twee manieren worden ingesteld. Er kan gekozen worden om een automatische configuratie te doen, maar er kan ook voor de handmatige manier gekozen worden. We zullen beide manieren beschrijven. 
+
+\subsection{netconfig}
+Om het netwerk in te stellen is er een script wat je hierbij helpt. Dit script heet \texttt{netconfig}. De werking hiervan is enorm eenvouding. Er worden per stap wat vragen aan je gesteld. Geef antwoord op de vragen, en bevestig daarna je instellingen. \texttt{netconfig} zal ze dan toepassen.
+\begin{lstlisting}
+root@slackbak:/home/kevin# netconfig
+\end{lstlisting}\index{netconfig}
+
+\subsection{Handmatige configuratie}\index{rc.inet1.conf}
+Om het netwerk handmatig te configureren is het nodig om de netwerk config file aan te passen. Dit bestand bevat alle netwerk gerelateerde configuratie. We zullen hier de relevante informatie geven van een bedraad device onder de naam \emph{eth0}.
+\begin{lstlisting}
+root@slackbak:/home/kevin# cat /etc/rc.d/rc.inet1.conf 
+[...]
+# If USE_DHCP[interface] is set to "yes"
+# this overrides any other settings.
+IPADDR[0]="145.24.222.162"
+NETMASK[0]="255.255.255.0"
+USE_DHCP[0]=""
+DHCP_HOSTNAME[0]=""
+[...]
+# Default gateway IP address:
+GATEWAY="145.24.222.253"
+[...]
+kevin@slackbak:~$ cat /etc/HOSTNAME 
+slackbak.cmi-hro.nl
+\end{lstlisting}%$
+\index{cat}\index{/etc/HOSTNAME}
+Zoals je kunt zien is er niets wereld schokkends aan de config file. Alle velden spreken voorzich. Wanneer het systeem up komt, zullen bovenstaande waardes uitgelezen worden waarna het systeem ze zal gebruiken. 
+
+\subsection{/etc/hosts}\index{/etc/hosts}
+Deze file bevat verwijzingen naar hosts op het netwerk, welke niet door de \emph{DNS} server gegeven zullen worden opgezocht. De syntax vereist geen uitleg:
+\begin{lstlisting}
+127.0.0.1               localhost
+145.24.222.162          slackbak.cmi-hro.nl slackbak
+145.24.129.221          ftphro.nl ftphro
+\end{lstlisting}
+
+\subsection{/etc/resolv.conf}\index{/etc/resolv.conf}
+Om de \emph{DNS} in te stellen kan de file \texttt{/etc/resolv.conf} gebruikt worden. DNS servers toevoegen gaat erg gemakkelijk:
+\begin{lstlisting}
+root@slackbak:/home/kevin# cat /etc/resolv.conf 
+nameserver 145.24.129.1
+nameserver 145.24.129.2
+\end{lstlisting}
+
+\subsection{ifconfig}\index{ifconfig}
+Om netwerk instellingen te doen zonder config files aan te passen en services te reloaden is er ook een tool genaamd \texttt{ifconfig} beschikbaar. De output hiervan is behoorlijk intimiderend. Wanneer er echter rustig naar gekeken word, vallen veel regels al op zijn plaats. Wanneer de velden niet duidelijk zijn verwijzen we weer door naar de \emph{man pages}. 
+\begin{lstlisting}
+kevin@slackbak:~$ /sbin/ifconfig 
+eth0 Link encap:Ethernet  HWaddr 00:0c:29:fa:16:57  
+     inet addr:145.24.222.162 Bcast:145.24.222.255 Mask:255.255.255.0
+     inet6 addr: fe80::20c:29ff:fefa:1657/64 Scope:Link
+     UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+     RX packets:16340 errors:0 dropped:0 overruns:0 frame:0
+     TX packets:5796 errors:0 dropped:0 overruns:0 carrier:0
+     collisions:0 txqueuelen:1000 
+     RX bytes:1858849 (1.7 MiB)  TX bytes:1138260 (1.0 MiB)
+     Interrupt:18 Base address:0x1400 
+
+lo   Link encap:Local Loopback  
+     inet addr:127.0.0.1  Mask:255.0.0.0
+     inet6 addr: ::1/128 Scope:Host
+     UP LOOPBACK RUNNING  MTU:16436  Metric:1
+     RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+     TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+     collisions:0 txqueuelen:0 
+     RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+\end{lstlisting}%$
+Deze uitvoer laat de instellingen van twee netwerk devices zien. Namelijk \emph{eth0} en \emph{lo}. Dit zijn respectievelijk de netwerk-kaart en het loopback device. De netwerkkaart (nic) is ingesteld met het commando \texttt{netconfig} en het loopback device (lo) is altijd aanwezig, ook al is er geen nic aanwezig is. 
+\begin{lstlisting}
+root@slackbak:/home/kevin# ifconfig eth0 down
+\end{lstlisting}
+Met het commando \texttt{ifconfig} kunnen de network devices ingesteld en verwijderd worden. De manual page van \texttt{ifconfig} zegt dat de synopsis van \texttt{ifconfig}: 'ifconfig interface options' is. Het commando \texttt{ifconfig eth0 down} zorgt ervoor dat de device eth0 verwijderd wordt uit de network configuratie.
+
+\section{SSH}
+\subsection{Het verleden}\index{telnet}
+Om via het netwerk op een andere machine te werken kan er gebruik gemaakt worden van een remote terminal. De software die een remote terminal mogelijk maakt is in feite niets meer dan een virtueel toetsenbord en een virtuele output device. In het verleden werd hier \emph{telnet} voor gebruikt. 
+
+Een van de grootste nadelen van \emph{telnet} is het gemak waar de communicatie mee afgeluisterd kan worden. Telnet verstuurt al zijn verkeer namelijk onversleuteld. Wanneer je via telnet afgeluisterd zou worden, word dus ook het ``root'' wachtwoord van de betreffende server gecompromitteerd. Omdat servers vaak grote hoeveelheden gevoelige data bevatten is dit een groot gevaar voor de integriteit van onze moderne digitale infrastructuur. 
+
+\subsection{OpenSSH}\index{ssh}
+Om toch veilig te kunnen werken op machines waar je via het netwerk mee verbonden bent is er een programma ontwikkeld wat bekend staat onder de naam \emph{openssh}. Deze naam staat voor 'open secure shell', een techniek die van oorsprong uit de \emph{BSD} wereld komt. Deze techniek is dankzij het open karakter van de \emph{BSD-style} licenties uitgegroeid tot een industrie standaard voor remote terminals. 
+
+\emph{OpenSSH} bestaat uit twee delen, een server en een client. De server luisterd standaard op poort 22 naar inkomende verbindingen geiniti\"{e}erd door de OpenSSH client. Omdat SSH een fundamenteel onderdeel is voor onderlinge communicatie tussen servers, maar ook voor onderhoud zullen we in appendix \ref{app.ssh} een overzicht geven over de werking van SSH. 
+
+\subsection{De eerste keer}
+Wanneer er voor het eerst verbinding word gemaakt met een host zal het volgende te zien zijn.
+\begin{lstlisting}
+kevin@slackbak:~$ scp kevin@host.nl:/home/kevin/backup.tar.gz ~/backup.gz
+The authenticity of host 'host.nl (1.2.3.4)' can't be established.
+RSA key fingerprint is 0e:35:8e:be:6a:61:f0:dd:b1:ef:fe:a6:7f:f6:a5:da.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'host.nl,1.2.3.4' (RSA) to the list of known hosts.
+kevin@host.nl's password:
+\end{lstlisting}%$
+Hiermee wordt de identiteit van een host gecontroleerd. In de toekomst zal dit gebruikt worden om te verifi\"{e}ren of er weer met dezelfde host verbinding wordt gemaakt. 
+
+Het is dus belangrijk om te zorgen dat de \emph{RSA key fingerprint} correct is. Dit is te controleren door deze handmatig te vergelijken met de fingerprint van de server. Vraag bij de beheerder de key op, of controleer hem zelf na de configuratie van server:
+\begin{lstlisting}
+kevin@slackbak:~$ ssh-keygen -l -f /etc/ssh/ssh_host_rsa_key
+2048 0e:35:8e:be:6a:61:f0:dd:b1:ef:fe:a6:7f:f6:a5:da /etc/ssh/ssh_host_rsa_key.pub (RSA)
+\end{lstlisting}%$
+
+\subsection{Verbinding}
+Wanneer een gebruiker succesvol is ingelogd via SSH, kan er gemakkelijk op het remote systeem gewerkt worden. Alle commando's die in de shell worden uitgevoerd zullen op de remote host gedraaid worden. Het is net alsof je fysiek achter de computer zit. 
+
+\subsection{Problemen}
+Wanner de unieke host key van een host is gewijzigd betekend dit dat de unieke fingerprint is gewijzigd. Dit kan zo bedoeld zijn, bijvoorbeeld door een nieuwe installatie waarbij nieuwe keys gegenereerd zijn. Wanneer dit niet zo is zijn we bij optie twee aangekomen; iemand is met de verbinding aan het rotzooien. Let dus enorm op bij de volgende scherm:
+\begin{lstlisting}
+kevin@slackbak:~$ ssh kevin@host.nl
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that the RSA host key has just been changed.
+The fingerprint for the RSA key sent by the remote host is
+b4:85:5a:03:c0:07:5e:9c:52:1d:2d:54:2d:15:59:38.
+Please contact your system administrator.
+Add correct host key in /home/kevin/.ssh/known_hosts to get rid of this message.
+Offending key in /home/kevin/.ssh/known_hosts:1
+RSA host key for host.nl has changed and you have requested strict checking.
+Host key verification failed.
+\end{lstlisting}%$
+
+\section{SCP}\index{scp}
+Deze afkorting staat voor \emph{Secure Copy}. Dit gebruikt de faciliteiten van 
+\emph{SSH} om een beveiligde verbinding op te zetten met de remote host. Over dit versleutelde kanaal kan vervolgens data verzonden worden. 
+\begin{lstlisting}
+kevin@slackbak:~$ scp kevin@host.nl:/home/kevin/backup.tar.gz ~/backup.gz
+kevin@host.nl's password: 
+backup.tar.gz 100% 10MB 88.3KB/s 01:57
+\end{lstlisting}%$
+
+\section{FTP}\index{ftp}
+Een protocol wat van traditioneel veel gebruikt word om binaire data over te sturen is \emph{FTP}, het \emph{file transfer protocol}. Dit protocol is te gebruiken met het ftp commando. De meest simpele werking is als volgt.
+\begin{lstlisting}
+kevin@slackbak:~$ ftp ftp.hro.nl
+Connected to orpheus.hro.nl.
+[...]
+220 Service Ready for new User
+Name (ftp.hro.nl:kevin): 
+\end{lstlisting}%$
+of
+\begin{lstlisting}
+kevin@slackbak:~$ ftp
+ftp> open ftp.hro.nl
+Connected to orpheus.hro.nl.
+[...]
+220 Service Ready for new User
+Name (ftp.hro.nl:kevin):
+\end{lstlisting}%$
+Op de regel met \emph{Name} staat 'ftp.hro.nl:kevin'. Dit betekend dat, wanneer je niets invult, er met de user kevin ingelogd zal worden. Dit word gedaan omdat dit de username op je huidige systeem is. 
+Gebruik als username \emph{studentno.extensie} en als password je HRO wachtwoord. Je bent nu ingelogd op de FTP-server van de HRO.
+
+Onthoud wel dat \emph{ftp} de data onversleuteld verstuurd. Wanneer je een verbinding dus niet vertrouwd is het af te raden om gebruik te maken van FTP. 
+
+\section{SFTP}\index{sftp}
+Omdat \emph{ftp}, zoals vermeld, gebruikt maakt van onversleutelde kanalen kan het reden zijn dit niet te gebruiken. Niemand wil natuurlijk dat zijn account gegevens van een machine op straat komen te liggen. Er kan om deze reden dan ook gebruik gemaakt worden van \emph{sftp}. Dit staat voor \emph{SSH File Transfer Protocol}, of soms het \emph{Secure File Transfer Protocol}. 
+
+Het gebruik van \emph{sftp} lijkt erg op dat van \emph{scp}. 
+\begin{lstlisting}
+sftp kevin@slack.host.nl
+kevin@slackbak's password: 
+Connected to slack.icyx.nl.
+sftp>
+\end{lstlisting}
+Er zijn echter wat kleine verschillen. \emph{sftp} stelt een gebruiker bijvoorbeeld ook in staat om een listing van een map op te vragen. Dit is iets wat in \emph{ftp} ook mogelijk is, maar wat met \emph{scp} niet kan zonder eerst een shell te openen. 
+
+Een ander klein practisch voordeel boven \emph{ftp} is de mogelijkheid tot het bewaren van de originele timestamps van bestanden wanneer het word verstuurt. Voor de preciese verschillen word er zoals gewoonlijk weer naar de man page verwezen. 

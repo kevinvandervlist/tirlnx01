@@ -1,0 +1,49 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Introductie}
+\emph{Linux} is net als \emph{Windows} een operating system, het ``programma'' wat draait op de computer en waarmee de computer bestuurd wordt. \emph{Linux} is ooit bedoeld geweest voor gebruik op een server en wordt daar ook op dit moment nog primair voor gebruikt. Ook als vervanger voor \emph{Windows}, met een grafische schil is \emph{Linux} tegenwoordig goed geschikt. Wel is er nog duidelijk te zien dat \emph{Linux} primair bedoeld is voor gebruik op  een server. Niet voor niets draait \emph{Linux} op de meeste web servers. De \emph{GUI} van \emph{Linux} is ook tegenwoordig goed bruikbaar voor normaal gebruik en er zijn dus ook steeds meer mensen die \emph{Linux} gebruiken voor hun ``normale'' computer. In dit dictaat gaan we geen gebruik maken van een \emph{GUI}\index{GUI}, maar gaan we  puur de \emph{Shell} gebruiken. Met een \emph{GUI} kan je vrij eenvoudig alles instellen en wijzigen, terwijl je met alleen een \emph{shell} je veel meer zelf moet doen.
+
+\section{De geschiedenis}
+In 1991 wilde de Finse student Linus Torvalds gebruik maken van \emph{UNIX}\index{UNIX}. Omdat \emph{UNIX} echter een betaald operating system was, ging hij aan de slag met \emph{Minix}. Dit voldeed al snel niet meer aan de eisen welke hij stelde en hij besloot een eigen kernel te gaan schrijven. Eigenlijk wilde hij een compleet operating system gaan maken, maar hij schreef uiteindelijk alleen de kernel. Naast de zelf geschreven kernel gebruikte hij de \emph{GNU tools}. Vandaar dat wanneer er tegenwoordig \emph{Linux} word gezegd, er de \emph{GNU/Linux} combinatie bedoeld wordt. \emph{Linux} is de kernel, met daarop de \emph{GNU tools} in \emph{userland}.\index{GNU}
+
+De eerste versie was niet echt bruikbaar voor de gemiddelde mens, het was het meer een speeltje voor programmeurs en hackers. Door het open karakter en de actieve gebruikers gemeenschap is hier toch een stabiel en volledig werkend operating system uit voortgekomen. In 1994 kwam de eerste versie dan echt uit en sindsdien is de kernel ook sterk verbeterd. Tegenwoordig draait \emph{Linux} niet alleen op standaard computers, maar ook op \emph{embedded systemen}, zoals routers en \emph{telefoons}. In de toekomst zal dit alleen maar toenemen. Er zijn momenteel zelfs al koelkasten in de handel die een \emph{Linux} versie draaien.
+
+De kernel is uiteraard ook op dit moment nog steeds in ontwikkeling. Onder leiding van Linus Torvalds worden er nog steeds nieuwe technieken ge\"{i}mplementeerd en fouten verbeterd. Uiteraard doet hij dit niet in zijn \'{e}\'{e}ntje, iedereen die wilt kan zijn bijdrage doen via de git repository van de kernel. Het aantal personen dat heeft gewerkt aan de source code van de \emph{Linux} kernel bedraagt vele duizenden.
+
+\section{De GNU}
+De \emph{GNU foundation} is opgericht door Richard Stallman. Hij is het project begonnen om een vrije implementatie van een \emph{UNIX} systeem te cre\"{e}ren. Het bekendste werk van de \emph{GNU foundation} is de \emph{GNU userland}, het gedeelte wat \emph{Linux} bruikbaar maakt als systeem. Het bied namelijk een vrije verzameling van zogenaamde \emph{userland utilties}, waardoor het systeem daadwerkelijk gebruikt kan worden. De \emph{GNU foundation} zet zich op allerlei manieren in om te garanderen dat deze software vrij blijft. Naast de software is er ook de \emph{GPL}. De \emph{GPL} is de licentie welke is geschreven door de \emph{GNU foundation}. Alle software welke wordt uitgebracht door de \emph{GNU} wordt vrijgegeven onder de \emph{GPL} license. In bijlage \ref{app.gpl} kan er een samenvatting gevonden worden over de \emph{GPL} en wat de \emph{GPL} precies is. In principe zijn alle \emph{Linux} varianten uitgekomen onder de \emph{GPL}. Vroeger was alle software gebruikt onder \emph{Linux} \emph{GNU} software, maar tegenwoordig wordt er steeds vaker gebruik gemaakt van software welke als vervanger is geschreven voor de \emph{GNU} variant. Deze vervangers zijn in sommige gevallen ook niet onder de \emph{GPL} uitgegeven, maar onder een andere open source license.
+
+\section{Niet vrije software?}
+Uiteraard is er ook voor \emph{Linux} niet vrije software beschikbaar. Sommige distributies steunen dit en hebben via hun package systeem deze niet vrije software gewoon beschikbaar. Maar er zijn ook distributies welke hier zeer strikt in zijn. Een goed voorbeeld hierbij is \emph{Debian} (officieel \emph{Debian GNU/Linux})\index{Debian}. \emph{Debian} heeft als doel om enkel en alleen vrije software te gebruiken, dus vrijgegeven onder een open source licentie, zoals de \emph{GPL}. Closed source software, maar ook software welke niet voldoende copyright verleend aan de originele maker, zal in principe niet verspreid worden via het package system. \emph{Debian} gaat met dit principe erg ver, er wordt zelfs software verwijderd uit de repository van \emph{Debian} als het niet voldoet aan deze eisen\footnote{Het Firefox logo en de naam Firefox is een merkenrecht, waardoor het niet voldoet aan de richtlijnen voor vrije software. \emph{Debian} besloot hierop een versie zonder dit merkenrecht te verspreiden. Je zal in Debian dus gebruik maken van Iceweasel (en Icedove voor Thunderbird) in plaats van Firefox.}\footnote{Zie bijvoorbeeld ook hier \url{http://www.debian.org/News/2010/20101215}}. Andere distributies zijn hier soms minder streng in.
+
+\section{Ik wil mijn eigen distributie maken?}
+Door het vrije karakter is dit een van de mogelijkheden. Veel distributies zijn afgeleid van een andere distributie. Als je kijkt naar de historie van alle distributies \cite{bib.wiki.timeline} zie je dat een aantal distributies aan het begin begonnen zijn, de belangrijkste (en nog steeds gebruikten/ontwikkelde) hierin zijn: \emph{Debian}, \emph{Slackware} (gebaseerd op \emph{SLS}), \emph{Suse} (gebaseerd op \emph{Slackware}) en \emph{Red Hat}. Deze namen zullen je bijna allemaal redelijk bekend in de oren klinken, want ze zijn allemaal nog erg in trek. Je kan hier ook zien dat \emph{Slackware} op dit moment het langs ontwikkelde (en nog steeds in ontwikkeling zijnde) distributie is. 
+
+Vanaf de hierboven genoemde distributies zijn andere distributies voortgekomen, zogenaamde forks (afsplitsing). Ze kunnen op deze manier een geheel eigen distributie maken, zolang deze maar voldoet aan de voorwaarde waar het origineel onder is uitgebracht (dit is bijna altijd de GPL).
+
+Je kan dus zelf zo van het ene op het andere moment een  eigen distributie beginnen, zonder dat je erg veel werk hebt. Uiteraard zal je hiervoor heel wat meer kennis nodig hebben als uit dit document, maar het bevind zich onder de mogelijkheden.
+
+\section{De kracht van Linux}
+De kracht van Linux is natuurlijk het open karakter. Iedereen kan, als die persoon zich hiervoor openstelt, het aanpassen naar zijn eigen wens. Mochten er dus aanpassingen nodig zijn, zal er niemand zijn die de programmeur tegenhoud om dit door te voeren. 
+
+Wanneer een wijziging ook voor anderen van toegevoegde waarde is, kan \emph{upstream} (het ontwikkelteam van het project) besluiten de verbeteringen te integreren in de software, waarna het ook voor anderen beschikbaar gesteld word. Dit effect treed vooral op wanneer er fouten of veiligheidsrisico's optreden. E\'{e}n willekeurige ontwikkelaar hoeft maar een patch te maken die de problemen verhelpt, waarna het probleem wereldwijd is opgelost. Er is nu geen afhankelijkheid meer van een (onwillende) derde partij. 
+
+Het nadeel van deze open structuur is de mogelijkheid tot een wildgroei van projecten. Het is meerdere malen voorgekomen dat door een ruzie binnen een project forks ontstaan. Hierdoor komt er op de lange termijn een enorme wildgroei aan projecten, wat het overzicht voor de gebruikers niet duidelijker maakt. Een echte oplossing voor dit systeem is er niet, omdat de software compleet vrij is. Nadelige gevolgen kunnen echter wel worden beperkt door het gebruik van package managers binnen een distributie. Zij zorgen er dan voor dat er een duidelijke hoeveelheid packages is waaruit gekozen kan worden. 

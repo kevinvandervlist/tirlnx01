@@ -1,0 +1,209 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\documentclass[a4paper,11pt]{exam}
+% Hier hebben we de preamble, alle document settings moeten hier:
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{appendix}
+\usepackage[titles]{tocloft}
+\usepackage[dutch]{babel}
+\usepackage{listings}
+\usepackage{makeidx}
+\usepackage{float}
+\usepackage[hypertexnames=false]{hyperref}
+
+% Custom LaTeX commands:
+% ~ == {\raise.17ex\hbox{$\scriptstyle\sim$}}
+\newcommand{\customtilde}{\raise.17ex\hbox{$\scriptstyle\sim$}}
+% Meta info pdf:
+\hypersetup{
+%bookmarks=true, % show bookmarks bar?
+unicode=false, % non-Latin characters in Acrobat’s bookmarks
+pdftoolbar=true, % show Acrobat’s toolbar?
+pdfmenubar=false, % show Acrobat’s menu?
+pdffitwindow=false, % window fit to page when opened
+%pdfstartview={FitH}, % fits the width of the page to the window
+pdftitle={TIRLNX01 Vragen}, % title
+pdfauthor={Paul Sohier, Kevin van der Vlist}, % author
+pdfsubject={Inleiding Linux}, % subject of the document
+pdfcreator={make}, % creator of the document
+pdfproducer={make}, % producer of the document
+pdfkeywords={Linux} {Basis}, % list of keywords
+pdfnewwindow=true, % links in new window
+colorlinks=false, % false: boxed links; true: colored links
+linkcolor=black, % color of internal links
+citecolor=green, % color of links to bibliography
+filecolor=magenta, % color of file links
+urlcolor=cyan % color of external links
+}
+
+% Paragrafen hebben een witregel ertussen, en geen indent tab:
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.1in}
+
+% End of title + blz.
+% Table of content depth van 4, dus tm paragraph
+\setcounter{tocdepth}{4}
+%\renewcommand{\baselinestretch}{1.5} 1.5 regelafstand 
+
+%Pas listings aan zodat ze duidelijker zijn
+\lstset{ %
+  language=bash,                % choose the language of the code
+  basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=lr,	                % adds left and right lines
+  tabsize=2,	                % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+%  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  morekeywords={*,...}            % if you want to add more keywords to the set
+}
+%hyperref aanpassingen
+\hypersetup{pdfborder=0 0 0}
+
+% Onderstaande is voor de dots tussen chapter title + blz. 
+\makeatletter
+\renewcommand*\l@section[2]{%
+  \ifnum \c@tocdepth >\m@ne
+    \addpenalty{-\@highpenalty}%
+    \vskip 1.0em \@plus\p@
+    \setlength\@tempdima{1.5em}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode \bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak\normalfont\leaders\hbox{$\m@th
+        \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+        mu$}\hfill\nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+      \penalty\@highpenalty
+    \endgroup
+  \fi}
+\makeatother
+
+% En punten
+\addpoints
+% In brackets in margin
+\pointsinmargin
+\boxedpoints
+
+\framedsolutions % defines the style of the solution environment
+
+\renewcommand{\solutiontitle}{\noindent\textbf{Antwoord: }\par\noindent}
+
+\runningfooter{Paul Sohier\\Kevin van der Vlist}{TIRLNX01\\Hogeschool Rotterdam}{\thepage}
+
+
+% Einde preamble, begin document; 
+\begin{document}
+
+
+% Title page
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+
+\textsc{\Huge \bfseries TIRLNX01}\\[0.5cm]
+{\large \bfseries Keuzevak Linux}\\[0.25cm]
+{\large \bfseries Vragen}\\[1.5cm]
+
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\texttt{Auteurs:}\\
+\ \\
+\textsc{Kevin van der Vlist}\\
+\href{mailto:kevin@kevinvandervlist.nl}{kevin@kevinvandervlist.nl}\\
+\ \\
+\texttt{en}\\
+\ \\
+\textsc{Paul Sohier}\\
+\href{mailto:paul@paulsohier.nl}{paul@paulsohier.nl}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+
+\begin{flushright} \large
+\texttt{Gedoceerd te:}\\
+\ \\
+\textsc{Hogeschool Rotterdam}\\
+Vestiging Academieplein
+\end{flushright}
+\end{minipage}
+{\ }\\[1.5cm]
+{\large Versie 1.1}\\[0.75cm]
+{\large \today}
+\vfill
+\end{center}
+\vspace*{\fill}
+\end{titlepage}
+
+% Geen pagina no 1 op title
+\thispagestyle{empty}
+
+\clearpage
+
+\vspace*{\fill}
+\begin{abstract}
+Om een cijfer te halen voor dit keuzevak dien je antwoorden te geven op alle vragen in dit dictaat. 
+Omdat er geen tentamen word gegeven, zullen al deze vragen op papier moeten worden ingeleverd bij de begeleidend docent. 
+Na het inleveren zullen deze opgaven worden nagekeken, waarna er een cijfer word bepaald aan de hand van het aantal behaalde punten. 
+
+Het maximaal te behalen punten staat per vraag aangegeven.
+De berekening die resulteert in het eindcijfer word als volgt gedaan:
+$$
+\frac{behaalde\_punten}{\numpoints} \cdot 100 = eindcijfer
+$$
+
+Mochten sommige (delen van) vragen te moeilijk zijn is het dus aan te raden om deze in ieder geval tijdelijk over te slaan.
+Bekijk daarna of de punten ook nodig zijn. Succes.
+\end{abstract}
+\vspace*{\fill}
+
+\clearpage
+
+% De table of contents + toc in toc:
+\tableofcontents
+%\addcontentsline{toc}{chapter}{\numberline{}Inhoudsopgave}
+
+% Nu kunnen we de losse hoofdstukken gaan includen. 
+% Includen gebeurt met basename, dus zonder .tex
+
+% Questions worden in deel 1 geopend
+\include{antwoorden_deel1}
+\include{antwoorden_deel2}
+\include{antwoorden_deel3}
+\include{antwoorden_deel4}
+\include{antwoorden_deel5}
+\include{antwoorden_deel6}
+\include{antwoorden_deel7}
+
+% Eindigen van questions
+\end{questions}
+% Einde document
+\end{document}

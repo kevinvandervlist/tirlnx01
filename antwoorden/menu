@@ -1,0 +1,147 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+#!/bin/bash
+
+function menu
+{
+	echo "Kies een optie om uit te voeren: ";
+	echo "1. Zet een bestand in een variable";
+	echo "2. Kopieer een bestand naar een andere locatie";
+	echo "3. Verplaats een bestand naar een andere locatie";
+	echo "4. Pas een bestand aan via een editor";
+	echo "5. Email een bestand naar een gebruiker";
+	echo "6. Verwijder een bestand";
+	
+	echo "";
+	
+	echo "Voer het nummer in van wat je wilt, of q om af te sluiten";
+}
+
+function zetInVariable
+{
+	echo "Welke file wil je in een variable zetten?";
+	read file;
+
+	if [ -e $file ] ; then
+		echo "We gaan nu ${file} in een variable zetten.";
+
+#		$newData=`cat `;
+
+		# Debug:
+		echo $newData;
+	else
+		echo "${file} bestaat niet? ";
+	fi
+
+	sleep 3; # Even slapen zodat gebruiker rustig kan lezen
+}
+
+function kopieer
+{
+    echo "Welke file wil je kopieren?";
+    read file
+    echo "waarheen wil je hem kopieren?";
+    read loc
+
+    if [ -e $file ] ; then
+	cp $file $loc
+    else
+	echo "${file} bestaat niet";
+    fi
+    sleep 3; # Even slapen;
+}
+
+function verplaats
+{
+    echo "welke file wil je verplaatsen?";
+
+    read file
+    echo "waarheen wil je hem verplaatsen?";
+    read loc
+
+    if [ -e $file ] ; then
+	mv $file $loc
+    else
+	echo "${file} bestaat niet.";
+    fi
+
+    sleep 3;
+}
+
+function verwijder
+{
+    echo "Welke file wil je verwijderen?";
+
+    read file
+
+    echo "Weet je zeker dat je ${file} wilt verwijderen? Type J.";
+    read ja
+
+    if [ $ja == "J" ] ; then
+	rm $file;
+	echo "Verwijderd";
+    fi
+    sleep 3;
+}
+
+function edit
+{
+    echo "Welke file wil je aanpassen?";
+    read file
+
+    `emacs ${file}`;
+}
+
+function email
+{
+    echo "Welke file wil je sturen?";
+    read file;
+
+    echo "Waarheen wil je hem sturen?";
+    read email;
+
+    echo  "Welk onderwerp wil je hem geven?";
+    read onder;
+
+    if [ -e $file ]; then
+	cat $file | /usr/bin/mail -s "$onder" "$email";
+	echo "Verzonden";
+    else
+	echo "${file} bestaat niet.";
+    fi
+}
+
+exit=0;
+until [ $exit -gt 1 ]; do
+      menu
+      read optie
+      echo "Gekozen voor ${optie}";
+	case $optie in
+	     "q") exit;;
+	     "1") zetInVariable;;
+	     "2") kopieer;;
+	     "3") verplaats;;
+	     "4") edit;;
+	     "5") email;;
+	     "6") verwijder;;
+
+	esac
+ done

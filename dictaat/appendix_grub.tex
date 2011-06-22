@@ -1,0 +1,130 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Boot manager}\label{app.grub}\index{boot manager}
+Om een systeem te kunnen starten is er de mogelijkheid om gebruik te maken van zogenaamde \emph{boot managers}. Dit zijn programma's die het mogelijk maken om op een generieke manier een besturingssysteem de mogelijkheid te geven om te starten. 
+
+\section{MBR}\index{mbr}
+De afkorting \emph{MBR} staat voor \emph{master boot record}, de eerste sector van een gepartioneerde schijf. Het is een sector van 512 bytes, waardoor het een minimale beschikbaarheid heeft voor opslag. De data die hier op staat, kan een of meer van de volgende punten zijn.
+\begin{itemize}
+\item[1.] Het bevatten van de partitie tabel van een schijf. 
+\item[2.] Het starten van een boot manager.
+\item[3.] Een uniek device id opslaan. 
+\end{itemize}
+
+\section{Bootable partitie}
+Wanneer er geen gebruik word gemaakt van de \emph{MBR} om de bootmanager onder te brengen, zal de \emph{BIOS} van de computer kijken in de \emph{bootsector} van de eerste harde schijf. Er zal dan een \emph{boot manager} vanaf de partitie worden gestart. Met \texttt{fdisk}\index{fdisk} is te zien welke partitie \emph{bootable} is, de \emph{bootable} flag is eenvoudig met \texttt{fdisk}\index{fdisk} te wijzigen.
+
+Wanneer met \texttt{fdisk}\index{fdisk} de partities worden gelist zal de partitie met ``*'' de partitie zijn die \emph{bootable} is. 
+\begin{lstlisting}
+root@slackje:~# fdisk /dev/sda 
+[...]
+Command (m for help): p
+[...]
+   Device Boot Start    End      Blocks    Id System
+/dev/sda1 *    63       10506509 5253223+  83 Linux
+/dev/sda2      10506510 41977844 15735667+ 83 Linux
+/dev/sda3      41977845 52420094 5221125   82 Linux swap
+\end{lstlisting}
+Wanneer de \emph{bootpartitie} veranderd dient te worden, kan er weer gebruik worden gemaakt van \texttt{fdisk}\index{fdisk}. Dit is met de optie ``a'' erg makkelijk te regelen. 
+\begin{lstlisting}
+root@slackje:~# fdisk /dev/sda 
+Command (m for help): a
+Partition number (1-4): 2
+Command (m for help): p
+[...]
+   Device Boot Start    End      Blocks    Id System
+/dev/sda1 *    63       10506509 5253223+  83 Linux
+/dev/sda2 *    10506510 41977844 15735667+ 83 Linux
+/dev/sda3      41977845 52420094 5221125   82 Linux swap
+\end{lstlisting}
+Omdat de optie ``a'' de boot status van een schijf alleen maar aan of uit zet hebben we hier een potenti\"{e}le fout situatie. Een schijf mag namelijk maar een \emph{bootable} partitie hebben. We zullen de andere dus nog even uit moeten zetten. 
+\begin{lstlisting}
+root@slackje:~# fdisk /dev/sda 
+Command (m for help): a
+Partition number (1-4): 1
+[...]
+   Device Boot Start    End      Blocks    Id System
+/dev/sda1      63       10506509 5253223+  83 Linux
+/dev/sda2 *    10506510 41977844 15735667+ 83 Linux
+/dev/sda3      41977845 52420094 5221125   82 Linux swap
+\end{lstlisting}
+
+\section{GRUB}\index{grub}
+In het geval van \emph{GRUB}\footnote{Dit gaat over \emph{GRUB 1}.} gebeurt dit op de volgende manier.
+
+De \emph{BIOS} zal het primary boot device selecteren, en deze laden. In het geval van \emph{GRUB} is dit de zogenaamde \emph{GRUB stage 1}\footnote{De \emph{MBR} methode werkt vanaf hier identiek.}. Deze sectie kan vervolgens gelijk \emph{GRUB stage 2} laden, of het kan uit de eerste 30 kilobytes van de harde schijf een tussenstap laden, \emph{GRUB stage 1.5}. Deze stap kan gebruikt worden om extra \emph{file system} drivers te laden zodat in \emph{stage 2} een systeem gestart kan worden. 
+
+Wanneer \emph{GRUB} zich in stage 2 bevindt krijgt de gebruiker ook de mogelijkheid om met een kleine \emph{command line} eventueel een alternatieve boot optie in te voeren. Dit kan gebruikt worden om het systeem met andere waardes op te starten, of om juist een rescue procedure te starten. 
+
+Door de flexibele opzet is \emph{GRUB} ook erg geschikt voor systemen waar het niet direct compatible mee is. Het is namelijk mogelijk voor \emph{GRUB} een zogenaamde \emph{chainload} kan uitvoeren. Het geeft dan als het ware het stokje door aan de volgende \emph{boot manager} in rij. De \emph{boot manager} die dan actief wordt heeft totaal geen weet heeft dat het vooraf is gegaan door \emph{GRUB}. Dit biedt flexibiliteit om bijvoorbeeld een \emph{Windows} systeem te starten vanuit \emph{GRUB}. 
+
+\subsection{GRUB installeren}\label{grub.boot.install}
+Het installeren van \emph{GRUB} is erg gemakkelijk. Er bestaat een \emph{GRUB} \emph{package} die in de \emph{extra} tak van de \emph{repository} te vinden is. Wanneer de package is ge\"{i}nstalleerd kan deze worden geconfigureerd.
+\begin{lstlisting}
+root@slackbak:/# wget ftp://ftp.fu-berlin.de/unix/linux/mirrors/slackware/slackware-13.1/extra/grub/grub-0.97-i486-9.txz
+root@slackbak:/# installpkg grub-0.97-i486-9.txz
+root@slackbak:/# grubconfig 
+\end{lstlisting}
+
+Nu kan er voor ``simple'' worden gekozen, gevolgd door de ``standard'' \emph{framebuffer} optie. De volgende stap is het opgeven van de partitie met de ``/boot''. Geef hier bijvoorbeeld \emph{/dev/sda1} op. De laatste optie is de keuze tussen een installatie in de \emph{MBR} of de partitie van de schijf. In het laatste geval zal de partitie weer bootable verklaard moeten zijn. 
+
+\subsection{GRUB boot wijzigen}\label{grub.boot.modify}
+\emph{GRUB} biedt gebruikers de mogelijkheid om met gewijzigde boot parameters te starten. Ook kan er gekozen worden om tijdelijk van een andere partitie te starten. Dit kan door in het \emph{GRUB} menu op de ``e'' toets te drukken. Hierdoor kan de huidige geselecteerde entry gemodificeerd worden. 
+
+Om van een andere partitie te booten kan bijvoorbeeld worden gekozen om de optie \emph{root} te veranderen. 
+\begin{lstlisting}
+root (hd1,1)
+\end{lstlisting}
+Wanneer dit als root optie word gegeven betekend dit dat er geprobeerd zal worden om vanaf de tweede schijf en de tweede partitie te starten. 
+
+Een andere handigheid is om de \emph{init} parameter van de kernel te overschrijven. Een voorbeeld is het toevoegen van het volgende. 
+\begin{lstlisting}
+init=/bin/bash
+\end{lstlisting}
+Dit houdt in dat er gestart zal worden met de \emph{bash} shell als \emph{init} proces. Dit truukje word uitgebreider uitgelegd in bijlage \ref{app.rescue}. 
+
+Wanneer alle opties naar wens zijn aangepast kan het systeem worden gestart met de ``b'' toets. 
+
+Wanneer deze wijzigingen permanent dienen te zijn kunnen de \emph{GRUB} opties in het volgende bestand permanent worden aangepast.
+\begin{lstlisting}
+/boot/grub/menu.lst
+\end{lstlisting}
+
+\section{LILO}\index{LILO}
+Op oudere systemen, of op standaard \emph{Slackware} omgevingen komt het ook nog voor dat er \texttt{LILO}\index{LILO} wordt gebruikt. Dit is de voorganger van \emph{GRUB}, en staat voor \emph{LInux LOader}, een boot manager om \emph{Linux} te kunnen starten. 
+
+\subsection{Installatie}
+Het \emph{Slackware} commando \texttt{liloconfig}\index{liloconfig} is een menu gebaseerd configuratie programma waarmee \emph{LILO} eenvoudig geconfigureerd kan worden. 
+
+Om \emph{LILO} te installeren kan tijdens het draaien van \texttt{liloconfig}\index{liloconfig} gekozen worden voor een ``simple'' install, gevolgd door een standard \emph{framebuffer} keuze. De optionele \emph{kernel} parameters kunnen hoogstwaarschijnlijk leeg worden gelaten, tenzij je een goede reden hebt om er een toe te voegen. De keuze voor \emph{UTF-8} haalt momenteel niet meer uit, software is op nieuwe systemen hier wel op voorbereid. Bij de laatste keuze moet er gekozen worden voor een locatie om \emph{LILO} te installeren. 
+
+In de bovenstaande uitleg wordt er vanuit gegaan dat er ge\"{i}nstalleerd wordt in de \emph{bootable} partitie. De \emph{MBR} is ook zeker een mogelijke optie, kies dan natuurlijk voor die optie. 
+
+\subsection{Aanpassen LILO configuratie}
+De configuratie van \emph{LILO} vindt plaats in \emph{/etc/lilo.conf}. De belangrijkste is de regel met \emph{boot} erin. 
+\begin{lstlisting}
+boot=/dev/sda
+\end{lstlisting}
+Hier staat de locatie van \emph{LILO}. Momenteel is dit de \emph{bootsector} van de eerste harde schijf, dus niet de \emph{root} partitie. Dit werkt alleen wanneer ook de \emph{boot manager} in de \emph{MBR} te vinden is. 
+In het eerder beschreven scenario zal dit dus moeten worden aangepast. 
+\begin{lstlisting}
+boot=/dev/sda1
+\end{lstlisting}

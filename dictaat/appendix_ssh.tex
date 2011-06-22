@@ -1,0 +1,74 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{SSH}\label{app.ssh}\index{ssh}
+Van het \emph{SSH} protocol bestaan meerdere versies. We zullen dit verhaal richten op versie twee hiervan. Dit doen we omdat versie twee de variant is die standaard word gebruikt in productie omgevingen, aangezien deze veiliger is. 
+
+De details over deze beslissing vallen buiten de scope van dit document, hiervoor verwijzen we naar de encrypievakken van de opleiding. Dit geldt voor deze complete sectie van de appendix. We zullen, wanneer relevant, wel verwijzen naar externe informatiebronnen. 
+
+\section{Verbinding opzetten}
+Wanneer er een verbinding wordt opgezet zal er als eerste stap een \emph{Diffie-Hellman}\cite{bib.diffiehellman}\cite{bib.diffiehellman.paper} key agreement plaatsvinden. Hieruit volgt een zogenaamde \emph{shared session key}. Deze shared session key is een geheime sleutel welke bekend is bij de beide partijen, maar toch niet bekend kan zijn bij partijen die eventueel de communicatie afluisteren. Er is dus een geheime key te genereren over een insecuur medium. 
+
+De rest van de session verloopt via een \emph{symmetrische versleuteling}\cite{bib.sym.enc}. Er is hiervoor de mogelijkheid om uit verschillende algoritmes te kiezen. Keuzes worden doorgegeven aan de client, welke er een zal uitkiezen voor de communicatie. De sleutel hiervoor is de geheime key die met behulp van \emph{Diffie-Hellman} is gegenereerd. 
+
+Om de integriteit van de sessie te bewaken zal er gebruik gemaakt worden van een \emph{session authentication code}. Ook hier is weer keuze uit verschillende algoritmes. Deze code kan door de client, maar ook de server worden gebruikt om een \emph{Message Authentication Code} te genereren om de integriteit en de authenticiteit van een bericht te controleren. 
+
+\section{Authenticatie}
+De server en de client hebben nu een beveiligde verbinding gestart. Er is echter nog op geen enkele manier gekeken over welke gebruiker er nu probeert te verbinden. Om de identiteit van de client vast te stellen kunnen er verschillende methodieken gebruikt worden. We zullen de twee meest gebruikte hier even behandelen. 
+
+\subsection{Public Key Authentication}
+Om gebruik te maken van \emph{public key authentication} word er aan de server, maar ook aan de clientkant gezorgd dat er een private en een public key gegenereerd worden. De public key is, zoals de naam vermoed, publiekelijk bekend. Deze zal verspreid moeten worden naar de andere kant van de verbinding. De private key blijft alleen bekend bij de eigenaar ervan, anders is de integriteit van de key niet meer verzekerd. 
+
+Wanneer er een authenticatiepoging word gedaan met public/private keys zal \emph{OpenSSH} automatish een \emph{RSA}\cite{bib.rsa}\cite{bib.rsa.pres} of een \emph{DSA}\cite{bib.dsa} authenticatie proberen. Doordat beide partijen elkaars public key kennen, maar de private verborgen hebben, kunnen ze een data versleutelen die alleen de andere partij kan ontcijferen. Er heeft dan een succesvolle authenticatie plaatsgevonden. 
+
+\subsection{Password authenticatie}
+Via deze methode word er om het wachtwoord van de gebruiker gevraagd. Dit wachtwoord word dan naar de server kant verstuurd. Omdat het kanaal waarover dit gebeurd versleuteld is, zal deze niet gecompromitteerd zijn. Op de server kant zal er een gewone user authenticatie plaatsvinden. Wanneer dit een positief resultaat geeft zal er in ieder geval een geverifi\"{e}erde gebruiker zijn.
+
+\section{Account check}
+Op dit moment is op een van bovenstaande manier de gebruiker geverifieerd. Nu moet nog gekeken worden of deze gebruiker wel recht heeft op shell access. Er word dan naar drie punten gekeken. 
+
+\subsection{Locked}
+De gebruiker kan vergrendeld zijn. Dit betekend dat er wel een account is van de gebruiker, maar dat deze door een beheerder is vergrendeld. Een gebruiker mag dus om deze reden het systeem niet meer in, en zal een unlock moeten aanvragen. 
+
+\subsection{DenyUsers}\index{DenyUsers}
+De \emph{OpenSSH} server heeft ook een configuratie optie waar gebruikers kunnen worden opgegeven, die wel een (werkende) account hebben, maar geen toegang hebben tot \emph{SSH}. Dit betekend dat ze zich alleen fysiek mogen aanmelden op de machine in kwestie. 
+
+\subsection{DenyGroups}\index{DenyGroups}
+Wanneer een gebruiker zich bevind in een groep welke in de \emph{OpenSSH} server config  staat aangegeven als een verboden groep, zal de login ook worden geblokkeerd. Men zou dus kunnen beslissen om de groep \emph{users} toe te voegen achter de directive \emph{DenyGroups}. Hierdoor zou het voor leden van andere groepen nog steeds mogelijk zijn om in te loggen. 
+
+\section{Sessie voorbereiden}
+Nu we zeker weten dat een gebruiker ook toegang heeft op de server kunnen we voor de gebruiker een sessie gaan cre\"{e}eren. Dit gaat schematisch in de volgende stappen. 
+
+\begin{itemize}
+% ~ == {\raise.17ex\hbox{$\scriptstyle\sim$}}
+\item[1.] Wanneer de login plaatsvind op een \emph{tty} word, tenzij anders gespecificeerd in SSH config of \emph{\customtilde/.hushlogin}, de last login en \emph{/etc/motd} geprint. 
+\item[2.] Als de login plaatsvind op een \emph{tty} word de login tijd opgeslagen. 
+\item[3.] Als het bestand \emph{/etc/nologin} bestaat word dit afgedrukt, en word de verbinding gesloten. Dit geld niet wanneer de \emph{root} gebruiker inlogt. %t niet d 
+\item[4.] \emph{fork()} onder user permissies. 
+\item[5.] Stel basis environment in. Eventueel ook dingen als X forwarding instellen. 
+\item[6.] Als gebruikers een eigen environment mogen instellen zal dit gedaan worden aan de hand van \emph{{\raise.17ex\hbox{$\scriptstyle\sim$}}/.ssh/environment}, mits deze bestaat. 
+\item[7.] Verander naar de home directory van de gebruiker. 
+\end{itemize}
+
+\section{Shell}
+Nu alle aanvragen van de client zijn behandeld is het aan de client om een proces uit te voeren. Dit kan een speciaal commando zijn welke is opgegeven met verbinden, maar meestal zal dit de shell zijn. Beide kanten van de verbinding mogen op ieder moment data naar elkaar zenden, waardoor er een volledig interactieve omgeving is ontstaan. 
+
+\section{Disconnect}
+Als de user zijn aangevraagde programma (en eventuele verbindingen met de X server) afsluit, zal de server een \emph{exit} commando versturen naar de client, waarna de beide kanten verbinding met elkaar zullen verbreken. 

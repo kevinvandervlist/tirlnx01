@@ -1,0 +1,60 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Slackware Packages}\label{app.package}
+Package management betekend dat er kant en klare software paketten gedownload kunnen worden. De gebruiker zal dus geen compilatie van de source files hoeven te doen. Dit maakt het installeren van software een stuk gemakkelijker en sneller. Slackware biedt een minimale package manager aan, maar toch is het erg handig om te weten hoe dit werkt. We zullen dit hier uitleggen. 
+
+\section{pkgtool}\index{pkgtool}
+Dit is een frontend voor de verschillende losse onderdelen van de package manager. Het is via een grafische interface te bedienen. Het kan onder andere gebruikt worden om ge\"{i}nstalleerde software te bekijken, nieuwe software te installeren of oude software te verwijderen. Voor specifiekere toepassingen is het echter gemakkelijker om terug te grijpen op de programma's die onder de motorkap worden gebruikt. 
+
+\section{installpkg}\index{installpkg}
+Wanneer je een package download kan je met dit programma de package installeren. 
+\begin{lstlisting}
+root@slackbak:/tmp# installpkg grub-0.97-i486-9.txz 
+\end{lstlisting}
+
+\section{upgradepkg}\index{upgradepkg}
+Dit kan gebruikt worden om packages te updaten. Er zijn twee manieren om dit commando te gebruiken. Het upgraden van een package met dezelfde naam.
+\begin{lstlisting}
+root@slackbak:/tmp# upgradepkg grub-0.97-i486-9.txz 
+
++================================================================
+| Upgrading grub-0.95-i486-2 package using ./grub-0.97-i486-9.txz
++================================================================
+[...]
+\end{lstlisting}
+Het upgraden van een package die hetzelfde aanbied, maar een nieuwe naam heeft gekregen kan ook. De syntax is dan oude naam\%nieuwe naam.
+\begin{lstlisting}
+root@slackbak:/tmp# upgradepkg oudenaam-grub-0.95-i486-2.txz%grub-0.97-i486-9.txz 
+
++================================================================
+| Upgrading oudenaam-grub-0.95-i486-2 package using ./grub-0.97-i486-9.txz
++================================================================
+[...]
+\end{lstlisting}
+
+\section{removepkg}\index{removepkg}
+Hiermee kunnen packages worden verwijderd.
+\begin{lstlisting}
+root@slackbak:/tmp# removepkg grub-0.97-i486-9
+Removing package /var/log/packages/grub-0.97-i486-9...
+Removing files:
+[...]
+\end{lstlisting}

@@ -1,0 +1,44 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Linux en Hardware}
+Een belangrijk deel in \emph{Linux} is de hardware aansturing. Zonder hardware zal een computer in principe niet werken, hij bestaat immers dan niet meer. Hierdoor is er dus veel focus op hardware support binnen \emph{Linux}. Dit complete hoofdstuk gaat over de hardware in een computer.
+
+\section{Harde schijven}\index{libata}
+Harde schijven zijn een vrij belangrijk onderdeel binnen je computer. In het verleden werd er verschil gemaakt tussen \emph{IDE} (PATA)\index{IDE} en \emph{S-ATA}\index{SATA}. In de huidige kernel wordt er gebruik gemaakt van \emph{libata} waardoor alle schijven via dezelfde methode worden afgehandeld. Alle aanwezige schijven zullen een /dev/sdX device aangewezen krijgen, zoals bijvoorbeeld \emph{/dev/sda} voor de eerste schijf. Hierbij staat de X voor het schijfnummer in de vorm van een letter. Deze letter wordt toegewezen op de volgorde waarop  de schijven aanwezig zijn in de computer.
+
+\subsection{eSATA}\index{eSATA}
+Met de moderne hardware van tegenwoordig zijn er ook veel externe harde schijven. Veel schijven worden via \emph{USB} aangesloten, maar tegenwoordig zijn er ook schijven verkrijgbaar welke via \emph{eSATA} aangestuurd kunnen worden. \emph{eSATA} is op dezelfde standaard gebaseerd als \emph{SATA}, maar dan voor externe schijven. \emph{eSATA} schijven worden ook door \emph{libata} afgehandeld.
+
+\section{USB}\index{USB}
+\emph{USB} is \'{e}\'{e}n van de meest gebruikten aansluitingen op een computer om randapparatuur aan te sluiten. \emph{Linux} biedt ondersteuning aan via \emph{libusb}\index{libusb} ondersteuning voor een hoop \emph{USB}-apparatuur. We proberen hier de meest gebruikte \emph{USB}-hardware te bespreken, maar we kunnen uiteraard niet alles bespreken. 
+\subsection{USB-sticks}
+Onder \emph{USB-sticks} valt eigenlijk veel meer dan alleen maar een simpele \emph{USB} stick. Eigenlijk valt alles wat op de computer via \emph{USB} aangesloten wordt en een benaderbaar schrijfbaar medium bevat hieronder. Dit betekend bijvoorbeeld een fotocamera, externe harde schijf (Die niet via \emph{eSATA} aangesloten wordt) enzovoort. Deze \emph{devices} worden net als de normale harde schijven via \emph{libata}\index{libata} aangestuurd. Dit betekend dus dat ze een \emph{sdX} device toegewezen krijgen en dat deze hierna via dit device eenvoudige \emph{gemount} kan worden. Doordat \texttt{mount}\index{mount} tegenwoordig het filesystem herkent hoeft er geen parameter opgegeven te worden over welk filesysteem gebruikt wordt. Door gebruik te maken van \emph{udev}\index{udev} kan het device ook automatische gemount worden. Dit is bijvoorbeeld handig wanneer er gebruik wordt gemaakt van een \emph{GUI}.
+
+\subsection{Muizen en toetsenborden}
+Tegenwoordig wordt er steeds meer gebruik gemaakt van muizen en toetsenborden welke ook via \emph{USB} worden aangestuurd. Doordat er een standaard is ontwikkeld voor de communicatie van deze apparaten is het voor de makers ervan heel eenvoudig om een nieuw device te maken. Ook voor gebruikers is het eenvoudig om een nieuw device in gebruik te nemen. Door het soort \emph{USB} device door te geven weet de \emph{kernel} met wat voor soort device hij te doen heeft en kan hij deze direct aanroepen en aansturen. Hierdoor hoeft niet voor ieder nieuw device een aanpassing voor de \emph{kernel} gemaakt te worden. Dit zou niet te doen zijn en je ontwikkeld een enorm probleem voor de ontwikkelaars om dit bij te houden. 
+
+\section{Netwerkkaarten}
+Een netwerkkaart wordt in bijna alle gevallen automatische door de kernel herkend indien er in de kernel een module aanwezig is voor de netwerk kaart. Tegenwoordig zijn voor de meest bekende bedrade netwerkkaarten drivers aanwezig. Voor \emph{WIFI} kaarten geldt eigenlijk hetzelfde. Een uitzondering hierop is wanneer de drivers niet open source zijn en je bijvoorbeeld gebruik maakt van een distributie zoals \emph{Debian}. Zie hoofdstuk \ref{h.netwerk} over netwerken voor meer informatie over het gebruik van het netwerk en de configuratie.
+
+\section{Overige hardware}
+Veel hardware wordt eigenlijk direct ondersteund door de \emph{Linux} kernel. De reden hiervoor is eigenlijk vrij simpel. De meeste hardware welke er is maakt gebruik van \emph{USB}. Doordat \emph{libUSB} ontzettend veel randapparatuur standaard ondersteund maken veel fabrikanten gebruik hiervan. Er zijn eigenlijk maar weinig verschillende soorten poorten op een computer/server aanwezig naast de \emph{USB}-poorten. Hierdoor is het vaak ook niet nodig om extra ondersteuning toe te voegen voor apparaten welke niet gebruik maken van \emph{USB} of bijvoorbeeld \emph{PCI-Express}. Ook \emph{PCI-Express} wordt standaard ondersteund door \emph{Linux}.
+
+

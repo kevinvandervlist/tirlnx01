@@ -1,0 +1,135 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\documentclass{beamer}
+
+\mode<presentation>
+
+\usepackage[dutch]{babel}
+%\usepackage{beamerthemesplit}
+\usetheme{Berlin}
+\useinnertheme{rounded}
+\usecolortheme{rose}
+\setbeamertemplate{navigation symbols}{} 
+
+\title{Keuzevak Linux - Week 1}
+\author{Paul Sohier \and Kevin van der Vlist}
+\institute{Versie $1.0$}
+\date{\today}
+
+\begin{document}
+
+\section{Welkom}
+\frame{
+  \titlepage
+} 
+
+\frame{
+  \frametitle{Inhoud}
+  \tableofcontents
+}
+
+\section{Informatie}
+\frame{
+  \frametitle{Informatie en benodigdheden}
+  \begin{itemize}
+    \item<1-> dictaat, presentaties, vragen te vinden op: \url{http://www.hosthuis.nl/linux/}
+    \item<1-> geen tentamen, enkel vragen inleveren voor cijfer
+    \item<1-> huiswerk inleveren op \url{huiswerk@paulsohier.nl}
+    \item<1-> vermeld je naam en student nummer
+    \item<1-> deadline: vrijdag van de laatste lesweek
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Dictaat printen - geen verplichting}
+  \begin{itemize}
+    \item<1-> kosten printen dictaat en inbinden (Op school): $10,92 + 3,50 = 14,48$ euro
+    \item<1-> bestellen bij ons: 10 euro
+    \item<1-> keuze enkel of dubbelzijdig
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Voorkennis}
+  \begin{itemize}
+    \item<1-> basis kennis computers
+    \item<1-> basis programeerkennis
+    \item<1-> interesse in \emph{Linux}
+  \end{itemize}
+}
+
+\section{Wat is Linux}
+\frame{
+  \frametitle{Wat is Linux - Geschiedenis}
+  \begin{itemize}
+    \item<1-> Finse student begon in 1991
+    \item<1-> eerste versie niet bruikbaar, hackers speeltje
+    \item<1-> gebruik makend van GNU userland
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Wat is Linux - De kracht}
+  \begin{itemize}
+    \item open, iedereen kan aanpassen
+    \item zo te gebruiken, voor iedereen
+  \end{itemize}
+}
+
+\frame
+{
+  \frametitle{Wat is Linux - De problemen}
+  \begin{itemize}
+    \item open, iedereen kan zo in de source kijken en problemen vinden
+    \item veel (verschillende) versies
+  \end{itemize}
+}
+
+\section{Linux en Hardware}
+\frame{
+  \frametitle{Linux en Hardware}
+  \begin{itemize}
+    \item harde schijven heten /dev/sdX
+    \item alles via libata heeft zelfde naam
+    \item vroeger /dev/hdX
+  \end{itemize}
+}
+
+\section{Installatie}
+\frame{
+  \frametitle{Installatie - Slackware}
+  \begin{itemize}
+    \item<1-> Slackware, ``ouderwets''
+    \item<1-> geen GUI
+    \item<1-> gebruik virtualbox voor installatie
+  \end{itemize}
+}
+
+\frame{
+ \frametitle{Installatie - Grub}
+ \begin{itemize}
+   \item<1-> vervanging van LiLo
+   \item<1-> LiLo is ouderwets
+   \item<1-> meer mogelijkheden met Grub
+ \end{itemize}
+}
+
+\end{document}

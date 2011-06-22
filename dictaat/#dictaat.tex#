@@ -1,0 +1,280 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\documentclass[a4paper,11pt]{report}
+% Hier hebben we de preamble, alle document settings moeten hier:
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{appendix}
+\usepackage[titles]{tocloft}
+\usepackage[dutch]{babel}
+\usepackage{listings}
+\usepackage{makeidx}
+\usepackage{float}
+\usepackage[hypertexnames=false]{hyperref}
+\usepackage{fancyhdr}
+
+% Custom LaTeX commands:
+% ~ == {\raise.17ex\hbox{$\scriptstyle\sim$}}
+\newcommand{\customtilde}{\raise.17ex\hbox{$\scriptstyle\sim$}}
+% Meta info pdf:
+\hypersetup{
+%bookmarks=true, % show bookmarks bar?
+unicode=false, % non-Latin characters in Acrobat’s bookmarks
+pdftoolbar=true, % show Acrobat’s toolbar?
+pdfmenubar=false, % show Acrobat’s menu?
+pdffitwindow=false, % window fit to page when opened
+%pdfstartview={FitH}, % fits the width of the page to the window
+pdftitle={TIRLNX01}, % title
+pdfauthor={Paul Sohier, Kevin van der Vlist}, % author
+pdfsubject={Inleiding Linux}, % subject of the document
+pdfcreator={make}, % creator of the document
+pdfproducer={make}, % producer of the document
+pdfkeywords={Linux} {Basis}, % list of keywords
+pdfnewwindow=true, % links in new window
+colorlinks=false, % false: boxed links; true: colored links
+linkcolor=black, % color of internal links
+citecolor=green, % color of links to bibliography
+filecolor=magenta, % color of file links
+urlcolor=cyan % color of external links
+}
+
+% Paragrafen hebben een witregel ertussen, en geen indent tab:
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.1in}
+% Onderstaande is voor de dots tussen chapter title + blz. 
+\makeatletter
+\renewcommand*\l@chapter[2]{%
+  \ifnum \c@tocdepth >\m@ne
+    \addpenalty{-\@highpenalty}%
+    \vskip 1.0em \@plus\p@
+    \setlength\@tempdima{1.5em}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode \bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak\normalfont\leaders\hbox{$\m@th
+        \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+        mu$}\hfill\nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+      \penalty\@highpenalty
+    \endgroup
+  \fi}
+\makeatother
+
+% End of title + blz.
+% Table of content depth van 4, dus tm paragraph
+\setcounter{tocdepth}{4}
+%\renewcommand{\baselinestretch}{1.5} 1.5 regelafstand 
+
+%Pas listings aan zodat ze duidelijker zijn
+\lstset{ %
+  language=bash,                % choose the language of the code
+  basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=lr,	                % adds left and right lines
+  tabsize=2,	                % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+%  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  morekeywords={*,...}            % if you want to add more keywords to the set
+}
+%hyperref aanpassingen
+\hypersetup{pdfborder=0 0 0}
+
+% We gebruiken de index
+\makeindex
+
+% Footer
+% \runningfooter{Paul Sohier\\Kevin van der Vlist}{TIRLNX01\\Hogeschool Rotterdam}{\thepage}
+\pagestyle{fancy}
+
+\renewcommand{\headrulewidth}{0.0pt}
+
+\lhead{}
+\chead{}
+\rhead{}
+
+\lfoot{Paul Sohier\\Kevin van der Vlist}
+\cfoot{TIRLNX01\\Hogeschool Rotterdam}
+\rfoot{Pagina\\\thepage}
+
+% Ook in chapters
+\fancypagestyle{plain}{\pagestyle{fancy}}
+
+% Einde preamble, begin document; 
+\begin{document}
+% Title page
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+
+\textsc{\Huge \bfseries TIRLNX01}\\[0.5cm]
+{\large \bfseries Keuzevak Linux}\\[0.25cm]
+{\large \bfseries Dictaat}\\[1.5cm]
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\texttt{Auteurs:}\\
+\ \\
+\textsc{Kevin van der Vlist}\\
+\href{mailto:kevin@kevinvandervlist.nl}{kevin@kevinvandervlist.nl}\\
+\ \\
+\texttt{en}\\
+\ \\
+\textsc{Paul Sohier}\\
+\href{mailto:paul@paulsohier.nl}{paul@paulsohier.nl}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+
+\begin{flushright} \large
+\texttt{Gedoceerd te:}\\
+\ \\
+\textsc{Hogeschool Rotterdam}\\
+Vestiging Academieplein
+\end{flushright}
+\end{minipage}
+{\ }\\[1.5cm]
+{\large Versie 1.1}\\[0.75cm]
+{\large \today}
+\vfill
+\end{center}
+\vspace*{\fill}
+\end{titlepage}
+
+% Abstract (+ in toc)?:
+\begin{abstract}\centering
+We proberen jullie wegwijs te maken binnen een Linux omgeving.\\
+Hopelijk slagen we hierin.
+
+\textsc{``Unix is user-friendly. It's just very selective about who its friends are.''}
+\end{abstract}
+
+% We baseren structuur op het dictaat Remko & Peter; vermelden
+\phantomsection
+\addcontentsline{toc}{chapter}{\numberline{}Voorwoord}
+\chapter*{Voorwoord}
+De structuur van dit dictaat is gebaseerd op het dictaat \textsl{Linux Starter Pack}\cite{bib.rvrijpb}, geschreven door Remko de Vrijer en Peter Berends. We hebben de structuur als basis gebruikt, en verder het document helemaal herschreven met up to date informatie. Daarnaast is het document ook uitgebreid met extra informatie. Enkele kleine delen van de tekst, voornamelijk van technieken die momenteel weinig gebruikt worden, zullen nog uit het originele document komen. 
+
+% De table of contents + toc in toc:
+\tableofcontents
+\addcontentsline{toc}{chapter}{\numberline{}Inhoudsopgave}
+
+% Inleiding:
+\chapter*{Inleiding}
+\addcontentsline{toc}{chapter}{\numberline{}Inleiding}
+Dit dictaat is erop gericht om jullie op een goede manier in te leiden binnen een \emph{GNU/Linux} systeem. We zullen dit echter op een andere manier aanpakken dan men in eerste instantie zou denken. 
+
+Om een duidelijk beeld te cre\"{e}eren zonder verschillende termen door elkaar te halen zullen door het dictaat de volgende drukstijlen gebruikt worden. 
+\begin{itemize}
+\item[1.] Normale tekst is gewoon uitleg.
+\item[2.] ``Tekst in quotes'' zal betekenen dat we dingen extra willen benadrukken. Denk aan gebruikersnamen en menu-items. 
+\item[3.] \emph{Schuin gedrukte woorden} zullen begrippen of namen zijn.
+% Alle commando's in de \index{} voor reference. 
+\item[4.] Commando's zullen in \texttt{monospaced font} afgedrukt zijn. 
+\item[5.] Voorbeelden met code of de uitvoer van commando's zullen in blokken verschijnen met regelnummers. Regelnummers zijn geen onderdeel van de code.
+\begin{lstlisting}
+Dit is een voorbeeld.
+\end{lstlisting}
+\end{itemize}
+Als eerste zal er duidelijk gemaakt moeten worden dat er niet op een ``grafische'' manier naar een systeem gekeken zal worden. Er zal namelijk geen gebruik gemaakt worden van een \emph{GUI}. De reden hiervoor is de drang om een systeem ``te verbergen'' voor gebruikers. Deze krijgen hierdoor geen mogelijkheid om eens goed onder de motorkap te kijken. 
+
+Ook zal er in server situaties geen \emph{GUI} gebruikt worden. Waarom zou iemand de kostbare resources van een server willen verspillen aan rekentijd voor een grafische omgeving? Dit geldt alleen maar sterker als de snelheid van een geoefende \emph{shell} gebruiker in ogenschouw wordt genomen. 
+
+Dit dictaat zal worden gericht op de distributie \emph{Slackware}. Hier is voor gekozen omdat het relatief weinig wordt gebruikt en omdat het een puristische instelling heeft met betrekking tot de inrichting van het systeem. Dit resulteert in meer ``handwerk'' om het systeem te configureren, maar laat wel beter zien hoe het nu precies in elkaar zit. 
+
+We hopen dat dit dictaat jullie zal helpen bij het begrijpen van de \emph{GNU/Linux} wereld.
+% Einde inleiding
+
+% HACK: Page number fixen. Dit is voor makeidx + hyperref
+% 13 is de pagina met hoofdstuk 01, dus inleiding erop. 
+% Dit zorgt ervoor dat alle
+\setcounter{page}{13}
+% Nu kunnen we de losse hoofdstukken gaan includen. 
+% Includen gebeurt met basename, dus zonder .tex
+\include{hoofdstuk_introductie}
+\include{hoofdstuk_linux_hardware}
+\include{hoofdstuk_installatie}
+\include{hoofdstuk_systeem}
+\include{hoofdstuk_inrichting}
+\include{hoofdstuk_editors}
+\include{hoofdstuk_user_management}
+\include{hoofdstuk_proces_management}
+\include{hoofdstuk_networking}
+\include{hoofdstuk_xorg}
+\include{hoofdstuk_device_files}
+\include{hoofdstuk_basis_commando}
+\include{hoofdstuk_shell}
+\include{hoofdstuk_shell_scripting}
+% Appendix:
+\appendix
+\include{appendix_virtualbox}
+\include{appendix_bios}
+\include{appendix_fdisk}
+\include{appendix_grub}
+\include{appendix_rescue}
+\include{appendix_package}
+\include{appendix_source}
+\include{appendix_ssh}
+\include{appendix_emacs}
+\include{appendix_vim}
+\include{appendix_gpl}
+
+% Include van de biblio file, ook in de toc:
+\phantomsection 
+\addcontentsline{toc}{chapter}{\numberline{}Bibliografie}
+\bibliographystyle{plain}
+\bibliography{biblio}
+
+% Als laatste printen we de index, helemaal onderaan het document. Ook deze komt in de toc
+\phantomsection
+\addcontentsline{toc}{chapter}{\numberline{}Index}
+\printindex
+
+% Einde document
+\end{document}

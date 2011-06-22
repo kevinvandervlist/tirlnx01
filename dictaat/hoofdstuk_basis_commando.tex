@@ -1,0 +1,299 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Basiscommando's}\label{h.basis}
+% Alfabetisch toevoegen
+Dit hoofdstuk geeft de lezer een overzicht van de meest handige \emph{tools} binnen een \emph{Linux} systeem. Dit overzicht dient meer als ``basispakket'', zodat de lezer zichzelf kan redden met het basis gereedschap van het systeem, en is derhalve geen compleet overzicht. 
+
+Er zal worden benadrukt wat de taak van het commando is, gevolgd door een praktijk voorbeeldje. Voor ieder commando geldt echter wel dat er meer informatie te vinden is in de bijbehorende \emph{man page}. Deze is op te vragen met het commando \texttt{man}\index{man}. Er zal in de \emph{man page} een compleet overzicht over het commando te vinden zijn. 
+
+Mocht het opgezochte commando niet precies voldoen aan de wensen kan er ook altijd nog naar de paragraaf \emph{SEE ALSO} van de \emph{man page} worden gekeken. Hier kunnen eventuele andere commando's worden aangeraden die de gewenste taak wel kunnen volbrengen. 
+
+\section{awk}\index{awk}
+\texttt{awk} is een scripttaal specifiek voor \emph{UNIX} en is bedoeld voor het verwerken van tekstbestanden. \texttt{awk}\index{awk} wordt veel gebruikt voor kleine automatische tekst bewerkingen binnen zowel \emph{UNIX} als \emph{Linux}. Het gaat te ver om hier helemaal uit te leggen wat \emph{awk} is, meer informatie is te vinden in de \emph{man pages} over \texttt{awk}\index{awk}. Het is een taal die erg gericht is op \emph{reguliere expressies}. Mede om deze reden is \texttt{perl}\index{perl} gebaseerd op \texttt{awk}\index{awk}.
+
+\section{bzip2}\index{bzip2}
+Dit commando biedt een interface om gebruik te maken van een \emph{compressie algoritme}, waardoor het bestanden kan comprimeren. Het gebruikte algoritme heet ook \emph{bzip2}, wat de naam van het commando natuurlijk meteen verklaard. 
+
+Een bestand comprimeren is erg gemakkelijk:
+\begin{lstlisting}
+kevin@iusaaset:/tmp$ ls -lh video.dump 
+-rw------- 1 kevin kevin 11M Dec 18 12:50 video.dump
+kevin@iusaaset:/tmp$ bzip2 video.dump 
+kevin@iusaaset:/tmp$ ls -lh video.dump
+-rw------- 1 kevin kevin 9.2M Dec 18 12:50 video.dump.bz2
+\end{lstlisting}%$
+
+Hier is te zien dat het bestand aanzienlijk kleiner is geworden. De standaard extensie van een bestand wat met \emph{bzip2} is gecomprimeerd is \emph{bz2}. Zo'n bestand kan ook weer worden uitgepakt:
+\begin{lstlisting}
+-rw------- 1 kevin kevin 9.2M Dec 18 12:50 video.dump.bz2
+kevin@iusaaset:/tmp$ bzip2 -d video.dump.bz2 
+kevin@iusaaset:/tmp$ ls -lh video.dump 
+-rw------- 1 kevin kevin 11M Dec 18 12:50 video.dump
+\end{lstlisting}
+Nu is het bestand weer in originele staat teruggebracht. 
+
+\section{cat}\index{cat}
+Leest een bestand en print de inhoud op \emph{STDOUT}, de standaard output. Dit wordt bijvoorbeeld gebruikt om een bestand te lezen: 
+\begin{lstlisting}
+kevin@slackbak:~/$ cat /etc/passwd
+[...]
+\end{lstlisting}%$
+
+\section{cron}\index{cron}
+Soms is het handig om een bepaald script of een bepaald commando dagelijks of wekelijks op een bepaald tijdstip te laten runnen. Dit kan gedaan worden door middel van een \emph{cronjob} via de \emph{crontab}. Een practisch voorbeeld is het configureren van nachtelijke backups. Via \texttt{man crontab}\index{man} is precies te vinden hoe het commando \texttt{crontab}\index{crontab} werkt. 
+
+Om de \emph{cronjobs} van een gebruiker aan te passen volstaat het om als die gebruiker het commando \texttt{crontab}\index{crontab} te starten:
+\begin{lstlisting}
+paul@slackbak:~$ crontab -e
+\end{lstlisting}%$
+De standaard editor zal nu worden geopend, waarna er instellingen gedaan kunnen worden om een \emph{cron} opdracht aan te maken. Het volgende voorbeeld zal elk uur om 10 minuten na het hele uur een bestand verwijderen:
+\begin{lstlisting}
+10 * * * * rm /tmp/tijdelijk_bestand
+\end{lstlisting}
+De \emph{*} staat voor een wildcard, waardoor deze altijd wordt uitgevoerd. De volgorde van de opties is: minuten, uren, dagen, maanden en dag van de week. Op deze manier kan er heel precies bepaald worden wanneer het script wordt uitgevoerd. 
+
+Het kan natuurlijk ook voorkomen dat een bepaalde opdracht enkele keren per uur uitgevoerd moet worden. 3 x per uur, dus iedere 20 minuten, is bijvoorbeeld te bereiken door de volgende syntax:
+\begin{lstlisting}
+*/3 * * * * rm /tmp/tijdelijk_bestand_2
+\end{lstlisting}
+
+Zie uiteraard voor meer informatie de \emph{man pages}.
+
+\section{diff}\index{diff}
+Het commando \texttt{diff} wordt gebruikt om de verschillen tussen twee bestanden te analyseren. Dit wordt gedaan door de bestanden regel voor regel te vergelijken. 
+\begin{lstlisting}
+kevin@slackbak:~$ diff passwd passwd_gewijzigd
+26,27c26,27
+< kevin:x:1000:100:Kevin van der Vlist,,,:/home/kevin:/bin/bash
+< paul:x:1001:100:,,,:/home/paul:/bin/bash
+---
+> kevin:x:1000:100:Kevin van der Vlist,,,:/home/kevin:/bin/dash
+> paul:x:1001:101:,,,:/home/paul:/bin/bash
+\end{lstlisting}%$
+Hier is te zien dat er op regel 26 en 27 wijzigingen zijn. 
+
+Het programma kan ook worden gebruikt om een \emph{patch} te cre\"{e}eren: 
+\begin{lstlisting}
+kevin@slackbak:~$ diff -u perf.c perf_veranderd.c 
+--- perf.c      2010-12-13 20:07:41.441979269 +0100
++++ perf_veranderd.c    2010-12-13 20:07:27.469135267 +0100
+@@ -301,6 +301,7 @@
+                { "sched",      cmd_sched,      0 },
+                { "probe",      cmd_probe,      0 },
+                { "kmem",       cmd_kmem,       0 },
++               { "extra",      cmd_extra,      0 },
+        };
+        unsigned int i;
+        static const char ext[] = STRIP_EXTENSION;
+\end{lstlisting}%$
+Om het bestand perf.c op een ander systeem op exact dezelfde manier te wijzigen hoeft alleen de \emph{patch} te worden verstuurd. Deze methode wordt veel gebruikt bij software ontwikkeling, omdat dan niet alle aangepaste bestanden opgestuurd hoeven te worden. 
+
+\section{file}\index{file}
+Dit programma kan worden gebruikt om het bestandstype te analyseren:
+\begin{lstlisting}
+kevin@slackbak:~/$ file hoofdstuk01.tex 
+hoofdstuk01.tex: LaTeX document text
+\end{lstlisting}%$
+
+\section{find}\index{find}
+Dit is \'{e}\'{e}n van de programma's die onmisbaar is voor een gebruiker van een systeem. Het programma \texttt{find}\index{find} geeft legio mogelijkheden om te zoeken. er zullen een paar handige scenario's geschetst worden. 
+
+Zoek alle bestanden in \emph{/etc/}, met \emph{sl??.rc} in hun naam, en list ze met \texttt{ls}:
+\begin{lstlisting}
+kevin@slackbak:~$ find /etc/ -name "sl??.rc" -type f -ls
+130562 24 -rw-r--r-- 1 root root 21599 May 19 2010 /etc/slrn.rc
+130332 4 v-rw-r--r-- 1 root root 1437 Feb 19 2010 /etc/slsh.rc
+\end{lstlisting}%$
+
+Zoek alle bestanden in /usr/bin, die beginnen met ps, groter zijn dan 5k, maar kleiner dan 10k: 
+\begin{lstlisting}
+kevin@slackbak:~$ find /usr/bin/ -name "ps*" -size +5k -a -size -10k
+/usr/bin/psc
+/usr/bin/psidtopgm
+/usr/bin/psset
+/usr/bin/psmandup
+\end{lstlisting}%$
+
+Als laatste zoeken we in /var/log, behalve /var/log/packages, naar bestanden waarin het woord \emph{swap} voorkomt. Daarna printen we de file en de regel met het woord: 
+\begin{lstlisting}
+kevin@slackbak:~$ find /var/log -wholename /var/log/packages -prune -o -name dmesg -exec grep "swap" '{}' /dev/null \; -print
+/var/log/dmesg:Adding 3140700k swap on /dev/sda3. Priority:-1 extents:1 across:3140700k 
+\end{lstlisting}%$
+
+\section{fsck}\index{fsck}
+\texttt{fsck} controleert en repareert indien nodig het filesysteem. Wanneer er een fout op het filesysteem aanwezig is kan \texttt{fsck} dit in veel gevallen repareren. \texttt{fsck} draait standaard om de X mounts om ervoor te zorgen dat het filesysteem niet beschadigd is. 
+
+\section{grep}\index{grep}
+\texttt{grep} is \'{e}\'{e}n van de meest gebruikte commando's in dit dictaat. Het is een zeer krachtig commando, omdat het gemakkelijk streams kan filteren op patronen waar een gebruiker in geinteresseerd is. De naam \emph{grep} komt van: 
+\begin{quote}
+\emph{\textbf{g}lobal / \textbf{r}egular \textbf{e}xpression / \textbf{p}rint}. 
+\end{quote}\cite{bib.grep}
+Doordat \texttt{grep} zo'n krachtig commando is kan het ontzettend veelzijdig ingezet worden. Met de verschillende opties kan \texttt{grep}\index{grep} ook gemakkelijk aangepast worden voor specifieke doeleinden. Hiervoor wordt ook weer naar de \emph{man pages} van \texttt{grep} verwezen.
+
+Wat \texttt{grep} eigenlijk doet is een bestand doorzoeken met een opgegeven \emph{reguliere expressie}. Juist door het gebruik van deze \emph{reguliere expressies} en de grote hoeveelheid parameters van \texttt{grep} is het zeer krachtig. Voor een voorbeeld van \texttt{grep} kunnen we naar bijna ieder hoofdstuk in dit dictaat verwijzen.
+
+\section{gzip}\index{gzip}
+Een ander programma om mee te \emph{comprimeren} is \texttt{gzip}\index{gzip}. Dit biedt samen met \texttt{gunzip}\index{gunzip} en \texttt{zcat}\index{zcat} mogelijkheden om data te comprimeren met behulp van het \emph{deflate}\cite{bib.deflate} algoritme. Het comprimeren van data kan erg eenvoudig:
+\begin{lstlisting}
+kevin@iusaaset:/tmp$ ls -lh dictaat.tex 
+-rw-r--r-- 1 kevin kevin 8.6K Dec 19 19:47 dictaat.tex
+kevin@iusaaset:/tmp$ gzip dictaat.tex 
+kevin@iusaaset:/tmp$ ls -lh dictaat.tex.gz 
+-rw-r--r-- 1 kevin kevin 3.7K Dec 19 19:47 dictaat.tex.gz
+\end{lstlisting}%$
+Om de inhoud van een bestand te bekijken wat verkleind is met \texttt{gzip}\index{gzip} kan gebruik gemaakt worden van \texttt{zcat}\index{zcat}. Dit werkt exact hetzelfde als \texttt{cat}\index{cat}, maar leest data uit een \emph{gzip'd} bestand. Dit laat het originele bestand gecomprimeerd zien:
+\begin{lstlisting}
+kevin@iusaaset:/tmp$ zcat dictaat.tex.gz
+\documentclass[a4paper,11pt]{report}
+\usepackage{graphicx}
+[...]
+\end{lstlisting}%$
+Er kan ook worden gekozen om de data uit te pakken. Dit is ook heel eenvoudig met het commando \texttt{gunzip}\index{gunzip}. 
+\begin{lstlisting}
+kevin@iusaaset:/tmp$ ls -lh dictaat.tex.gz 
+-rw-r--r-- 1 kevin kevin 3.7K Dec 19 19:47 dictaat.tex.gz
+kevin@iusaaset:/tmp$ gunzip dictaat.tex.gz 
+kevin@iusaaset:/tmp$ ls -lh dictaat.tex 
+-rw-r--r-- 1 kevin kevin 8.6K Dec 19 19:47 dictaat.tex
+\end{lstlisting}%$
+Ook met bijvoorbeeld \texttt{gzip -d} kan je een gzip file uitpakken.
+ 
+\section{ldd}\index{ldd}
+Dit programma kan worden gebruikt om na te gaan van welke shared libaries een bestand afhankelijk is. Dit is handig om te controleren waarom een bepaald programma niet meer kan starten: 
+\begin{lstlisting}
+kevin@slackbak:~$ ldd /usr/bin/echo 
+        linux-gate.so.1 =>  (0xffffe000)
+        libc.so.6 => /lib/libc.so.6 (0xb76aa000)
+        /lib/ld-linux.so.2 (0xb7823000)
+\end{lstlisting}%$
+
+\section{less}\index{less}
+Het programma \texttt{less} is de uitgebreidere variant van \texttt{more}. De \emph{man page} beschrijft het als \emph{less - opposite of more}. Je kan hier mee door teksten bladeren, zoeken naar woorden of andere dingen. Dit programma is aan te raden bij het lezen van teksten en zal standaard ook door \texttt{man} worden gebruikt. 
+
+\section{ln}\index{ln}
+Met het programma \texttt{ln} kunnen links worden aangemaakt worden om naar bestanden te verwijzen. Zo kan bijvoorbeeld een binary meerdere namen hebben, maar toch maar een keer opgeslagen zijn. 
+
+Er zijn wel verschillen tussen hard-, en soft links. Hard links laten een bestand naar dezelfde \emph{inode} verwijzen, terwij soft links gebruik maken word van relatieve pad verwijzingen. 
+
+Om het verschil duidelijk te maken hebben we een klein voorbeeldje. 
+\begin{lstlisting}
+kevin@slackbak:~$ touch bestand
+kevin@slackbak:~$ ln bestand hardlink
+kevin@slackbak:~$ ln -s bestand softlink
+kevin@slackbak:~$ ls -li
+total 8
+393379 -rw-r--r-- 2 kevin users 0 2010-12-13 19:57 bestand
+393379 -rw-r--r-- 2 kevin users 0 2010-12-13 19:57 hardlink
+393380 lrwxrwxrwx 1 kevin users 7 2010-12-13 19:57 softlink -> bestand
+\end{lstlisting}
+Hier is te zien dat \emph{softlink} een echte link is naar de file \emph{bestand}. De file \emph{hardlink} heeft dezelfde \emph{inode} als de file \emph{bestand}. 
+
+\section{man}\index{man}
+Voor dit commando willen we terugverwijzen naar de eerdere uitleg over het commando \texttt{man} in paragraaf \ref{man}. 
+
+\section{more}\index{more}
+\texttt{more} is een programma wat tekst opvult over het hele scherm. Hierdoor kan het worden gebruikt om gemakkelijk grote teksten door te lopen. Het kan echter niet terug, dus er kan alleen vooruit worden gebladerd. 
+
+\section{nice}\index{nice}
+Omdat \emph{Linux} een multi-user systeem is, zullen er regelmatig verschillende \emph{processen} met verschillende eigenaren actief zijn. Het kan echter voorkomen dat een \emph{proces} belangrijker is dan gemiddeld. 
+
+Om in deze situatie een oplossing te bieden kan er gebruik gemaakt worden van \texttt{nice}\index{nice}. Hiermee kan een \emph{proces} een hogere prioriteit gegeven worden. Dit houdt in dat het vaker ``aan de beurt is'' volgens de \emph{scheduler}. 
+
+Standaard heeft een \emph{proces} een \emph{niceness} van 10. Er kan met \texttt{nice}\index{nice} echter een waarde tussen -20 (belangrijkst) en de 19 (onbelangrijkst) toegekend worden. Op de volgende manier krijgt \texttt{tar}\index{tar} dus een hogere prioriteit:
+\begin{lstlisting}
+root@slackbak:/$ nice -10 tar czf /backup-home.tar.gz /home
+\end{lstlisting}%$
+
+\section{patch}\index{patch}
+Het commando \texttt{patch} kan worden gebruikt om een bestand met verschillen, bijvoorbeeld gemaakt met \texttt{diff} toe te passen op een bestand: 
+\begin{lstlisting}
+kevin@slackbak:~$ patch -p0 < perf.patch 
+patching file perf.c
+\end{lstlisting}%$
+
+\section{sed}\index{sed}
+\texttt{sed}\index{sed} staat voor \emph{Stream Editor} en kan tekst streams modificeren. Deze streams kunnen van de \emph{standaard input} komen, maar het kan ook tekst uit een file zijn. 
+
+E\'{e}n van de meest uitgebreide mogelijkheden om tekst mee te filteren is met \emph{reguliere expressies}\cite{bib.regex}\cite{bib.regex.bropj}. Er zal hier niet op ingegaan worden, we verwijzen hiervoor naar de betreffende vakken.
+
+Een voorbeeld van \texttt{sed} is het printen van alle usernames uit \emph{/etc/passwd}. De bovenste regel is een voorbeeld regel uit het bestand, de onderste is de output na het gebruik van \texttt{sed}\index{sed}:
+\begin{lstlisting}
+root@iusaaset:/$ head -1 /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+root@iusaaset:/$ sed 's/\([^:]*\).*/\1/' /etc/passwd | head -1
+root
+\end{lstlisting}\index{head}
+
+\section{stat}\index{stat}
+Dit commando laat uitgebreide informatie over een bestand zien. 
+\begin{lstlisting}
+kevin@slackbak:~$ stat /etc/passwd
+  File: `/etc/passwd'
+  Size: 1107            Blocks: 8          IO Block: 4096   regular file
+Device: 801h/2049d      Inode: 130608      Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2010-12-13 13:47:01.348605445 +0100
+Modify: 2010-12-07 13:29:30.124950561 +0100
+Change: 2010-12-07 13:29:30.189443446 +0100
+\end{lstlisting}%$
+
+\section{tail}\index{tail}
+Het programma \texttt{tail} kan gebruikt worden om het laatste gedeelte van een bestand te laten zien. Standaard zijn dit 10 regels, maar dit is eenvoudig aan te passen. 
+
+Een handige optie van \texttt{tail} is ``-f'', waarmee een bestand ``gevolgd'' kan worden. Hierdoor worden nieuwe entries in een file, zoals bijvoorbeeld een log, meteen weergegeven op \emph{STDOUT}. In een shell script zal men dit niet snel gebruiken, maar gewoon in de console is dit erg handig.
+
+\section{tar}\index{tar}
+Dit commando wordt gebruikt om archieven te maken met meerdere bestanden. De archieven zijn ongecomprimeerd en te representeren als een lange lijn met bestanden. Dit komt omdat \texttt{tar}\index{tar} bedoeld was om bestanden op te slaan op een \emph{tape drive}. 
+
+Tegenwoordig wordt \texttt{tar}\index{tar} vaak gebruikt in combinatie met \texttt{gzip}\index{gzip} of \texttt{bzip2}\index{bzip2}. Zo worden meerdere bestanden in een archief geplaatst, welke vervolgens weer als geheel wordt gecomprimeerd:
+\begin{lstlisting}
+kevin@iusaaset:~/dict$ tar -cjf /tmp/dictaat.tar.bz2 *
+kevin@iusaaset:~/dict$ ls -lh /tmp/dictaat.tar.bz2 
+-rw-r--r-- 1 kevin kevin 1.3M Dec 19 21:53 /tmp/dictaat.tar.bz2
+\end{lstlisting}
+
+Uitpakken van een archief is erg simpel:
+\begin{lstlisting}
+kevin@iusaaset:/tmp/dictaat$ ls -lh
+total 1.3M
+-rw-r--r-- 1 kevin kevin 1.3M Dec 19 21:53 dictaat.tar.bz2
+kevin@iusaaset:/tmp/dictaat$ tar -xjf dictaat.tar.bz2 
+kevin@iusaaset:/tmp/dictaat$ ls -lh
+total 1.6M
+-rw-r--r-- 1 kevin kevin 1.4K Dec 17 17:24 appendix_bios.tex
+-rw-r--r-- 1 kevin kevin 4.5K Dec 17 17:24 appendix_emacs.tex
+-rw-r--r-- 1 kevin kevin 1.3M Dec 19 21:53 dictaat.tar.bz2
+[...]
+\end{lstlisting}%$
+Om gebruik te maken van \texttt{gzip}\index{gzip} in plaats van \texttt{bzip2}\index{bzip2} kan de ``j'' optie vervangen worden door een ``z''. 
+
+\section{wget}\index{wget}
+Om bestanden van het internet te kunnen downloaden is er het programma \texttt{wget}. Dit programma is ontzettend uitgebreid, het kan zelfs gehanteerd worden om complete websites te kopieren. Voor de details wordt weer verwezen naar de \emph{man page}. 
+
+Naast het downloaden via \emph{http} ondersteunt \texttt{wget} ook de mogelijkheid om te downloaden via \emph{ftp}: 
+\begin{lstlisting}
+kevin@slackbak:~$ wget ftp://ftp.fu-berlin.de/unix/linux/mirrors/slackware/slackware64-13.1/source/installer/busybox-1.15.3.tar.bz2    
+[...]
+
+100%[==============================================>] 1,987,727    985K/s   in 2.0s    
+
+2010-12-13 20:20:33 (985 KB/s) - "busybox-1.15.3.tar.bz2" saved [1987727]
+\end{lstlisting}%$

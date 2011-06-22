@@ -1,0 +1,107 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{GNU Emacs}\label{app.emacs}\index{Emacs}
+\section{Introductie}
+Emacs\cite{bib.emacs.wiki}\cite{bib.emacs.gnu} is een reeks tekst editors, waarvan in de jaren 70 de ontwikkeling is begonnen. De belangrijkste en meest gebruikte variant van \emph{emacs} is de \emph{GNU} versie, \emph{GNU Emacs}. Deze tekst zal verder over deze variant gaan. 
+
+Emacs is een text editor die er naar streeft om de muis overbodig te maken. Doordat alle bediening met het toetsenbord gebeurd is het een editor die erg veel \emph{RSI klachten}\index{RSI} voorkomt. 
+
+\section{Voordelen}
+De voordelen van Emacs zijn legio, maar een paar van de belangrijkste zullen hier beschreven worden. 
+
+Als eerste hebben we het eerder genoemde \emph{RSI} punt. Dit word namelijk vaak veroorzaakt door het gebruik van een muis, aangezien dit (relatief) erg krampachtige bewegingen zijn. 
+
+Ten tweede is het ontzettend snel. Door het gebruik van de vele shortcuts is het voor een gebruiker van een traditionele editor (Netbeans, Eclipse, \ldots) onmogelijk om een Emacs of VI(M) gebruiker bij te houden. 
+
+Ook is het ontzettend lichtgewicht. Het gebruik van Emacs als editor kost bijna geen systeem resources. In de praktijk betekent het dat je systeem veel responsiever aanvoelt. Verder is de opstarttijd laag, en blijft het in gebruik erg vloeiend. 
+
+Er zijn meerdere clipboards. Ook al klinkt dit erg onzinnig is de mogelijkheid om meerdere dingen te knippen en te plakken met een paar simpele knoppen van je toetsenbord goud waard. Het bied erg veel mogelijkheden om grote stukken tekst of code efficient te herstructureren. 
+
+\section{Shortcuts}
+Er is een erg grote nadruk gelegd op het gebruik van shortcuts. Hierdoor kan je ontzettend snel complexe taken uitvoeren. Deze shortcuts zijn meestal via zogenaamde \emph{modifier keys} te gebruiken. Wanneer je in de documentatie van \emph{Emacs} kijkt zie je deze ook veel gebruikt worden. Het gebruik van knoppen is als volgt:\\
+\begin{tabular}[t]{ll}
+  \hline
+  Wat & Betekenis\\
+  \hline
+  C & Control\\
+  M & Meta (Alt)\\
+  C-f & Control + f\\
+  C-x C-f & Control + x gevolgd door Control + f\\
+  M-x sort-lines & Meta + x, gevolgd door het typen van sort-lines\\
+\end{tabular}
+
+Nu ben je als gebruiker in staat de documentatie en verschillende cheatsheets\cite{bib.emacs.cheatsheet}\index{Emacs!cheatsheet} te lezen. 
+
+\section{Navigatie in Emacs}
+Om mensen toch enigzins op weg te helpen zullen hier een aantal erg veel gebruikte knoppen worden gedefinieerd.\\
+\begin{tabular}[t]{ll}
+  \hline
+  Wat & Betekenis\\
+  \hline
+  C-f & Een karakter naar rechts\footnotemark.\\
+  M-f & Een woord naar rechts\footnotemark.\\
+  C-a & Begin van de regel.\\
+  C-e & Einde van de regel.\\
+  C-x f & Bestand openen.\\
+  C-x C-s & Bestand opslaan.\\
+  C-k & Kill 'knip' alles vanaf cursor naar einde regel.\\
+  M-Backspace & Delete een woord van cursor naar links.\\
+  M-d & Delete een woord van cursor naar rechts.\\
+  C-u & Undo.\\
+  C-y & Yank; plakken.\\
+  M-y & Cycle the kill buffer na een Yank.\\
+  C-x C-c & Emacs afsluiten\\
+\end{tabular}
+\footnotetext[1]{Dit geld ook voor C-b, M-p en M-n, een karakter naar links, boven en onder.}
+\footnotetext[2]{Dit geld ook voor M-b, M-p en M-n, een woord naar links, boven en onder.}
+
+\subsection{Configuratie}
+De configuratie van emacs bestaat uit het bestand \~{}/.emacs in de home directory van een gebruiker. Een leuk begin van een configuratie kan het volgende zijn:
+\begin{lstlisting}
+(custom-set-variables '(inhibit-startup-screen t))
+(custom-set-faces)
+;;Tab completion voor buffer switching. 
+(iswitchb-mode t)
+;;Indent grootte
+(setq standard-indent 4)
+;;Geen debiele backup files - we denken zelf na (name~)
+(setq make-backup-files nil)
+;;Geen toolbar
+(tool-bar-mode 0)
+;;Geen menu bar
+(menu-bar-mode -1)
+;;Fullscreen wanneer er op F11 gedrukt word. 
+(defun fullscreen ()
+    (interactive)
+    (set-frame-parameter nil 'fullscreen
+        (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
+            (global-set-key [f11] 'fullscreen)
+;;F12 voor de config file van emacs. 
+(global-set-key (kbd "<f12>") 
+  (lambda()(interactive)(find-file "~/.emacs")))
+;;Parenthesis highlighting!
+(show-paren-mode)
+;;Scrollbar rechts houden. 
+(set-scroll-bar-mode 'right)
+;;Trigger voor scrollen in een buffer.
+(setq scroll-margin 3)
+\end{lstlisting}
+Het commentaar geeft informatie over wat de regel doet. Voor een ontzettend uitgebreide website met achtergrond informatie willen we de ge\"{i}nteresseerde leze doorverwijzen naar de emacs wiki\cite{bib.emacs.ewiki}.

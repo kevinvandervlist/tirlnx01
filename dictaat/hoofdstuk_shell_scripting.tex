@@ -1,0 +1,451 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Shell scripting}
+Het beheersen van \emph{UNIX} commando's en een shell script taal zijn het fundament van een goede systeembeheerder en maken zijn leven vele malen aangenamer. We gaan hieronder kort de basis uitleggen van shell scripting. Dit is de pure basis, hierna zal het \emph{SSH} script van het vorige hoofdstuk kunnen begrijpen en waarschijnlijk ook na kunnen maken. De rest van dit hoofdstuk zal gaan over Statements, functies, en structuren. Maar ook over het gebruik van andere programmeer talen, en commando's.
+
+\section{Statements, expressies en controle structuren}
+Een belangerijk onderdeel van elke programmeer taal zijn de aanwezige statements. Het lijk eigenlijk erg op elkaar lijkt als je een normale programmeer taal zalt vergelijk met \emph{Bash}, maar het is toch weer niet helemaal hetzelfde. We gaan er een beetje van uit dat je de basis van programmeren wel kent, en ongeveer weet wat wat het doet. 
+
+\section{Variabelen en het if-statement}
+Variabelen bieden de mogelijkheid om tijdelijk dingen op te slaan. De \emph{Bash-shell} maakt weinig onderscheid in type variabelen zo bestaaan er wel integers en strings, maar zijn er bijvoorbeeld geen doubles of andere \emph{datatypen}.
+
+Zet het onderstaand voorbeeld in het bestand 'script.sh'. Maak het executable door \texttt{chmod + x}, en roep het daarna aan met \texttt{./script.sh}.\index{chmod}
+
+\begin{lstlisting}
+#!/bin/bash
+echo "Hey, wat is je naam?"
+read naam
+if [ $naam == $LOGNAME ]; then
+    echo "Ha $naam"
+else
+    echo "Dat is niet waar!"
+fi
+exit
+\end{lstlisting}%$
+Op de eerste regel staat \emph{\#!/bin/bash}, dit geeft aan dat dit een shellscript is. Ondanks dat het geen vereiste is om een werkend script te maken wordt het vaak wel gebruikt. Soms wordt bash vervangen door sh.
+
+Het commando \texttt{echo}\index{echo} zet iets op het scherm waarna \texttt{read}\index{read} de input van de gebruiker opslaat in de variable 'naam'. Het if-statement vergelijkt de waarde van de variable naam met de waarde in de \emph{variable \$LOGNAME}\index{\$LOGNAME}. Wanneer ze overeen komen (==) dan voert de shell de regel onder het if-statement uit, en anders voert de shell het \emph{else-statement} uit. De variable LOGNAME is een systeem-variable die de inlognaam van de user bevat. Als er met de waarde in een variable wordt gewerkt moet er een \$ voor komen.
+
+De structuur van het \emph{if-statement}:
+\begin{lstlisting}
+if conditie 1
+    then
+    statement1
+    statement2
+    ........
+elsif conditie2
+    then
+    statement3
+    statement4
+    ........
+elsif conditie3
+    then
+    statement5
+    statement6
+    ........
+fi
+\end{lstlisting}
+
+\section{Systeem variabelen}
+Hierboven maakten we al gebruik van \emph{systeem} variabelen, welke door de \emph{Shell} zelf een waarde gegeven wordt. Naast \emph{\$LOGNAME} zijn dit een aantal belangrijke voorbeelden:
+\begin{itemize}
+\item \emph{\$UID}: Bevat welke \emph{real} user ID de ingelogde gebruiker is.
+\item \emph{\$DISPLAY}: Bevat welk display er op dat moment op gewerkt wordt.
+\item \emph{\$PATH}: In dit pad worden de programma's/commando's gezocht welke uitgevoerd worden. Dit moet bijvoorbeeld aangepast worden wanneer je een programma op een ander als standaard locatie installeert.
+\end{itemize}
+We kunnen uiteraard niet alle aanwezige \emph{systeem} variabelen hier gaan noemen. Als je op internet of in de \emph{man pages} zoekt kan er nog veel meer voorbeelden vinden als hierboven.
+
+\section{Expressies}
+\emph{Expressies} worden vaak gebruikt bij het testen van \emph{voorwaarden}. Er wordt gekeken of er aan een bepaalde voorwaarde wordt voldaan. Aan de hand van de uitkomst van de voorwaarde wordt er een stuk code uitgevoerd.
+
+\subsection{String expressies}
+\begin{tabular}[t]{ll}
+  Expressie & Waar als\ldots \\
+  \hline
+  -z string & de lengte van de string 0 is \\
+  -n string & de lengte van string niet 0 is\\
+  string1 == string2 & de twee strings gelijk zijn\\
+  string1 != string2 & de twee strings ongelijk zijn\\
+  string & de string niet NULL is\\
+\end{tabular}
+
+\subsection{Integer expressies}
+\begin{tabular}[t]{ll}
+  expressie & waar als\ldots \\
+  \hline
+  int1 -eq int2 & de eerste integer gelijk is aan de tweede integer (equal)\\
+  int1 -ne int2 & de eerste integer ongelijk is aan de tweede integer (not equal)\\
+  int1 -gt int2 & de eerste integer groter is als de tweede integer (greater) \\
+  int1 -ge int2 & de eerste integer groter of gelijk is aan de tweede integer (greater or equal) \\
+  int1 -lt int2 & de eerste integer lager is als de tweede integer \\
+  int1 -le int2 & de eerste integer lager of gelijk is aan de tweede integer \\
+\end{tabular}
+
+\subsection{Bestands expressies}\label{h7.bestandexp}
+\begin{tabular}[t]{ll}
+  Expressie & Waar als\ldots\\
+  \hline
+  -e file & file bestaat \\
+  -r file & file bestaat en is readable \\
+  -w file & file bestaat en is writeable \\
+  -x file & file bestaat en is executable \\
+  -f file & file bestaat en is een gewoon bestand \\
+  -d file & file bestaat en is een directory \\
+  -h file & file bestaat en is een symbolic link \\
+  -c file & file bestaat en is een character special file \\
+  -b file & file bestaat en is een block special file \\
+  -p file & file bestaat en is een named pipe \\
+  -u file & file bestaat en is setuid \\
+  -g file & file bestaat en is setgid \\
+  -k file & file bestaat en heeft een sticky bit \\
+  -s file & file bestaat en de grote is meer als 0 \\
+\end{tabular}
+
+Een voorbeeld van een expressie is als volgt:
+\begin{lstlisting}
+  if [ -e /tmp/test/ ]; then
+      echo ``/tmp/test/ bestaat!''
+  fi
+\end{lstlisting}
+
+\subsection{Logische operatoren}
+\begin{tabular}[t]{ll}
+  Expressie & Doel
+  \\
+  \hline
+  ! & neem het tegenovergestelde van het resultaat van de expressie \\
+  -a & AND operator \\ 
+  -o & OR operator \\
+ \end{tabular}
+
+\section{De shell parameter variabelen}\label{h7.para}
+\begin{tabular}[t]{ll}
+  Variabele & Doel \\
+  \hline
+  \$0 & Naam van het script\\
+  \$1 tot \$9 & Het eerste tot de negende parameter\\
+  \$\# & Het totaal aantal parameters \\
+  \$* & Alle parameters die zijn opgegeven \\
+  \$@ & Alle parameters als gescheiden woorden \\
+\end{tabular}
+
+\section{Het case-statement}
+Het \emph{case-statement}, maakt gebruik van het voorkomen van bepaalde \emph{cases} die in het script voorkomen. Er is van te voren al gedacht over de mogelijk uitvoer en springt daar op in. Maak de file 'case.sh' aan met de onderstaande code erin. Maak de file executable en voer het uit.
+%todo: Code controleren (Echo!)
+\begin{lstlisting}
+#!/bin/bash
+echo -n "$*"
+case $2 in
+    "-")
+        echo 'expr $1 - $3'
+        ;;
+    "+")
+        echo 'expr $1 + $3'
+        ;;
+    "*")
+        echo 'expr $1 * $3'
+        ;;
+esac
+exit
+\end{lstlisting}
+
+Op de tweede regel staat de opdracht \texttt{echo}\index{echo} die de waarde van alle variables die als parameter zijn opgegeven aan het script weergeeft (\$*). Dus als we vanuit de shell intikken './case 2 + 3' dan is de \$* gelijk aan '2 + 3'. De optie 'echo -n' zorgt ervoor dat er nog niet op een nieuwe regel wordt begonnen.
+
+De shell leest nu het case-statement. Het vergelijkt de tweede parameter (\$2) met een '-' of '+'. Mochten ze niet overeen komen dan voert hij de code uit die bij de wildcard (*) staat. De wildcard staat voor alle mogelijk tekens. De werking van het scripot is dus een comandline rekenmachine die getallen optelt en aftrekt.
+
+De structuur van het case statement:
+\begin{lstlisting}
+  case "variable" in
+      mogelijkheid1)
+          statement1
+          statement2
+          ........
+      mogelijkheid2)
+          statement3
+          statement4
+          ........
+  esac
+\end{lstlisting}
+
+\subsection{Case voorbeeld}
+Het volgende voorbeeld drukt telkens de komende dag af. Sla het op in de file morgen.sh, maak het executable en run het:
+\begin{lstlisting}
+#!/bin/bash
+date=date
+	case "`$date +%a`" in
+	Sun) echo Sunday ;;
+	Mon) echo Tuesday ;;
+	Tue) echo Wednesday ;;
+	Wed) echo Thursday ;;
+	Thu) echo Friday ;;
+	Fri) echo Saterday ;;
+	Sat) echo Sunday ;;
+	*) echo "Help! Onmogelijk om hier te komen!" ;;
+esac
+\end{lstlisting}%$
+Het script maakt op dezelfde manier als het voorbeeld hiervoor gebruik van het case-statement. Alleen neemt het nu als voorwaarde het eerste woord van \texttt{date} als resultataat. Het commando \texttt{date}\index{date} wordt aan de variabele \$date toegekent. Normaal doet het commando date dit: 
+\begin{lstlisting}
+paul@slackbak:~$ date
+Mon Dec 20 13:55:43 CET 2010
+\end{lstlisting}%$
+Maar '\$date +\%a' is nu dus Mon, omdat \$date het hele resultaat weergeeft. Als er '\$date + \%b' had gestaan was het resultaat Dec. Dit klinkt nogal abstract maar met een paar oefeningen is het goed te begrijpen.
+
+\subsection{HELP, dit script werkt niet!}
+Heb je het script netjes overgenomen, maar je krijgt "Help! Onmogelijk om hier te komen!"? Dat kan best. Het huidige script gaat ervan uit dat je Engels als standaard taal gebruikt. Dit is standaard bij in ieder geval \emph{Slackware}, maar mogelijk bij een andere distributie niet. Op mijn laptop, met Nederlandse instellingen, krijg ik netjes deze fout. Hoezo? Date geeft iets anders terug:
+\begin{lstlisting}
+paul@paul-laptop:/tmp$ date
+wo dec  8 18:39:39 CET 2010
+\end{lstlisting}%$
+Wat valt op? Juist, er staat geen Wed, maar wo. Het case statement zal dus nooit uitgevoerd worden! Hoe kan je dit oplossen? In dit geval vrij simpel, door expliciet de taal op te geven. Voor engels kan je dit doen door als taal C te gebruiken. Dit kan op de volgende manier:
+\begin{lstlisting}
+paul@paul-laptop:/tmp$ LANG=C ./morgen.sh 
+Thursday
+\end{lstlisting}%$
+Bij het maken van een \emph{Shell} script moet je altijd rekening houden met de taal van de gebruiker en het operating system. Er kan nooit van uitgegaan worden dan een gebruiker de standaard instelling of taal gebruikt. Eigenlijk kan er dus nooit in een \emph{shell} script gecontroleerd worden op taal specifieke uitingen.
+
+\section{Het while statement}
+Het \emph{while-statement} voert een bepaalde handeling uit totdat er aan een voorwaarde wordt voldaan. Hier een voorbeeldje, het script simuleert een dobbelsteen waarvan je het aantal ogen moet raden:
+\begin{lstlisting}
+  #!/bin/bash
+  trap 'echo bedankt voor het spelen. ' EXIT
+  magischnr=$(($RANDOM%6+1))
+  
+  while [ "$gok" != "$magischnr" ]; do
+      echo Geef een cijfer tussen de 1 en de 6;
+      read gok
+  done
+  echo "Het magische nummer was: $magischnr"
+  exit
+\end{lstlisting}%$
+Het \texttt{trap}\index{trap} commando vangt de afbraak van het script af. Als er tijdens het runnen van het script plots op ctrl+c wordt gedrukt voert de shell het commando na de \texttt{trap} uit. Maar ook als het script netjes wordt afgesloten wordt hetr commando uitgevoerd. Meestal bevat een \texttt{trap} het verwijderen van tijdelijke files en weergeven van een afsluitboodschap. 
+
+De structuur van het while statement:
+\begin{lstlisting}
+  while conditie
+    do
+       statement1
+       statement2
+       ........
+ done
+\end{lstlisting}
+
+\section{Het untill-Statement}
+Het \emph{until-statement} voert iets uit tot dat aan de voorwaarde wordt voldaan. Het lijkt op het while statement, alleen doet het een handeling pas als er aan een voorwaarde wordt voldaan, terwijl het while-statement zo lang er aan de voorwaarde wordt voldaan iets doet.
+
+De structuur van het until statement:
+\begin{lstlisting}
+  until conditie
+    do
+       statement1
+       statement2
+       ........
+ done
+\end{lstlisting}
+Voorbeeld:
+\begin{lstlisting}
+  until ["$1" = ""]
+    do
+       statement1
+       statement2
+       ........
+ done
+\end{lstlisting}%$
+
+\section{Het for-statement}
+Naast de while en Untill loop hebben we ook nog de for loop. De for loop wijkt iets af van de uit \emph{C} of \emph{JAVA} bekende for loop. Er is standaard een teller, en die loopt een string af. 
+
+\begin{lstlisting}
+        #!/bin/bash
+        for i in `seq 1 10`;
+        do
+                echo $i
+        done    
+\end{lstlisting}%$
+\emph{seq}\index{seq}\index{echo} print een sequence of nummers, in dit geval van 1 tot 10. De for loop zal hierna van 1 tot 10 tellen. De i is een variable welke gebruikt wordt als teller.
+
+De structuur van de for loop is als volgt:
+\begin{lstlisting}
+for i in "$string";
+do
+    statement1
+    statement2
+    ........
+done
+\end{lstlisting}%$
+
+\section{Functies}
+In bijna elke taal zijn er functies aanwezig. Functies zijn handig binnen gebruik van programmeertalen, om bijvoorbeeld de code overzichtelijk te houden, veel voorkomende taken uit te voeren, of voor recursie.
+Ook in de \emph{shell} zijn functies aanwezig. In het geval van een functie roep je hem gewoon aan, net als een programma.
+Maak een bestand genaamd aanwezig.sh en zet het volgende script erin, en voer het hierna uit:
+\begin{lstlisting}
+#!/bin/bash
+aanwezig() {
+  if [ -e test.txt ] ; then
+      echo "bestaat"
+  else
+      echo "bestaat niet"
+  fi
+}
+aanwezig 
+\end{lstlisting}Dit script maakt eerst een functie genaamd aanwezig. In deze functie is een controle of het bestand test.txt bestaat. (Zie paragraaf \ref{h7.bestandexp} voor uitleg over -e). Wanneer hij niet bestaat print hij dit netjes, en zodra hij bestaat print hij dit ook. Als laatste is nog de functie aanroep zelf. Dit is netals een bestand aanroepen, gewoon de functie naam.
+Een voorbeeld uitvoer is dit:
+\begin{lstlisting}
+paul@slackje:~$ ./aanwezig.sh 
+bestaat niet
+paul@slackje:~$ touch test.txt
+paul@slackje:~$ ./aanwezig.sh 
+bestaat
+paul@slackje:~$ 
+\end{lstlisting}
+In het eerste geval bestaat het bestand test.txt niet. Hierna wordt het bestand aangemaakt met het commando touch\index{touch}. Wanneer dit aangemaakt is, wordt het script nogmaals uitgevoerd. En nu bestaat hij!
+
+\subsection{Parameters}
+Het bovenstaande script is nog niet erg dynamische. Het zal altijd controleren voor \'{e}\'{e} bepaald bestand. Wat je dus eigenlijk wilt is dat je dynamische kan opgeven om welk bestand dit gaat. Gelukkig is dit mogelijk, en wel op de volgende manier. Sla het volgende voorbeeld op als aanwezig2.sh:
+\begin{lstlisting}
+#!/bin/bash
+aanwezig() {
+  if [ -e $1 ] ; then
+      echo "$1 bestaat"
+  else
+      echo "$1 bestaat niet"
+  fi
+}
+aanwezig test.txt
+aanwezig aanwezig2.sh
+\end{lstlisting}%$
+Dit script zal als voorbeeld dit als resultaat geven:
+\begin{lstlisting}
+paul@slackje:~$ ./aanwezig2.sh 
+test.txt bestaat niet
+aanwezig2.sh bestaat
+paul@slackje:~$ touch test.txt
+paul@slackje:~$ ./aanwezig2.sh 
+test.txt bestaat
+aanwezig2.sh bestaat
+\end{lstlisting}%$
+Het bovenstaande script is eigenlijk maar heel weinig veranderd. In plaats van test.txt staat er nu \$1. De \$1 staat voor de eerste parameter aan die \textbf{functie} (Heeft het script ook als script parameters, dan zijn die niet zichtbaar voor de functie. Wil je de bestandsnaam toch zichtbaar maken, zal die apart op moeten geven worden als parameter). Dezelfde opties als voor de shell parameters uit paragraaf \ref{h7.para} gelden hier ook. Naast dat we afdrukken of het bestand dan daardwerkelijk bestaat, drukken we nu ook de bestandsnaam mee af. Dit zodat we kunnen zien wat de parameter eigenlijk was.
+De functie aanroep wordt nu ook aangepast. Als parameter moet er nu de bestandsnaam voor de controle worden opgegeven. Normaal gesproken zouden we ook nog moeten controleren of de parameter niet leeg is. Dit hebben we echter in dit voorbeeld weggelaten.
+
+\subsection{Shell parameters en functie parameters}
+Om het eerdere script nu nog iets verder aan te passen kunnen we ook nog de parameter dynamische maken door hem op te laten geven als shell parameter. Sla onderstaande code op als aanwezig3.sh.
+\begin{lstlisting}
+#!/bin/bash
+aanwezig() {
+  if [ -e $1 ] ; then
+      echo "$1 bestaat"
+  else
+      echo "$1 bestaat niet"
+  fi
+}
+aanwezig $1
+\end{lstlisting} 
+Wat je hier ziet is dat de eerste Shell parameter direct doorgegeven wordt als parameter voor de functie, en daar wordt gebruikt. \$0 is de bestandsnaam van het Shell script, \$1 de eerste parameter. Zie ook paragraaf \ref{h7.para}.
+Voorbeeld uitvoer:
+\begin{lstlisting}
+paul@slackje:~$ ./aanwezig3.sh 
+ bestaat
+paul@slackje:~$ ./aanwezig3.sh test.txt
+test.txt bestaat niet
+paul@slackje:~$ touch test.txt
+paul@slackje:~$ ./aanwezig3.sh test.txt
+test.txt bestaat
+\end{lstlisting}
+Zoals je ziet mist de controle op een lege parameter, en geeft hij dus dat een lege file aan als bestaat. Hierna wordt netjes gecontroleerd of test.txt aanwezig is.
+
+\section{Arrays}
+Met shell scripting kan er ook gebruik gemaakt worden van \index{array}arrays. Alhoewel deze datasets hetzelfde zijn als in de meeste andere talen, is het syntactisch wel een vreemde eend. Er zullen daarom wat voorbeelden gegeven over het gebruik van arrays:
+
+\subsection{Assignment}
+Array assignment. De quotes dienen om aardbei ijs als een element te specificeren.
+\begin{lstlisting}
+arr=( appel peer banaan "aardbei ijs" )
+# Dit geeft dus de volgende array:
+arr[0] = appel
+arr[1] = peer
+arr[2] = banaan
+arr[3] = aardbei ijs
+\end{lstlisting}
+
+Ook kan de array assignment op specifieke locaties plaatsvinden:
+\begin{lstlisting}
+arr=( [0]=appel [11]="aardbei ijs" )
+\end{lstlisting}
+
+\subsection{Benaderen}
+Print het tweede element:
+\begin{lstlisting}
+echo ${arr[1]}} 
+\end{lstlisting}%$
+
+Print de complete array:
+\begin{lstlisting}
+echo ${arr[@]}
+\end{lstlisting}%$
+
+Print de array size:
+\begin{lstlisting}
+echo ${#arr[@]}
+\end{lstlisting}%$
+
+Voeg een element toe aan de eerste vrije locatie
+\begin{lstlisting}
+arr[${#arr[@]}]="nieuw"
+\end{lstlisting}%$
+
+Print de size van het tweede array element 
+\begin{lstlisting}
+echo ${#arr[1]}
+\end{lstlisting}%$
+
+Print 2 elementen na id 10 
+\begin{lstlisting}
+echo ${arr[@]:10:2}
+\end{lstlisting}%$
+
+Er is nog veel meer mogelijk met arrays, maar de meest gebruikte vormen zijn nu gegeven. Mocht er meer interesse zijn in de mogelijkheden kan er naar de \emph{Advanced Bash Scripting Guide}\cite{bib.tldp.abs} gekeken worden. 
+
+\section{En nu?}
+Nu je de basis van shell scripting hebt gehad, kan je als het goed is het van SSH uit het vorige hoofdstuk compleet uit leggen hoe het werkt. Probeer zelf te bedenken hoe dit script werkt en wanneer je het niet snapt, lees de theorie nogmaals eens door en vraag je af wat je niet snapt. 
+
+\section{Commando gebruik}
+Met alleen structuren kom je natuurlijk nergens. In veel programeer talen zijn standaard functies aanwezig welke bepaalde taken kunnen doen. Met Shell scripting zal je hiervoor vaak moeten terugvallen op de standaard aanwezige commando's. Netals in de Shell zelf kan je in een Shell script standaard gebruik maken van de aanwezige commando's in de Shell. Voordat je deze gaat gebruiken moet je wel goed nadenken over wat voor consequenties dit heeft en hoe je dit kan opvangen. 
+
+We kunnen hier niet even alle commando's welke aanwezig zijn standaard in linux gaan uitleggen. Op een standaard Slackware install zijn dit er ruim 2600, en dit document is al lang genoeg. De belangrijkste commando's kan je lezen in hoofdstuk \ref{h.basis}. Elk commando aanwezig in je distributie kan je in principe gebruiken in je Shell script. Hou er wel rekening mee dat je bijvoorbeld in een \emph{cron} niet vraagt om user input. 
+
+\section{Alternatieve scripting mogelijkheden}
+Scripting is iets wat niet alleen mogelijk is door gebruik te maken van een van de \emph{shells} op het systeem, maar dit kan ook gedaan worden met behulp van andere scripting talen. 
+
+Een veel gebruikte scripting-, en programmeer taal is \texttt{perl}\index{perl}\cite{bib.perl.wiki}\cite{bib.perl.doc}. De afkorting \emph{perl} staat voor \emph{Practical Extraction and Report Language}, een naam die zeker recht wordt aangedaan. 
+
+\texttt{perl}\index{perl} is een scripting taal die erg gemakkelijk gebruikt kan worden om files (of streams) te analyseren. Dit komt omdat \texttt{perl}\index{perl} een enorme ondersteuning voor \emph{reguliere expressies} heeft. 
+
+Eem een klein idee te geven over de syntax van een \texttt{perl}\index{perl} programma zal hieronder een klein scriptje te vinden zijn wat gebruikers uit het bestand \emph{/etc/passwd} haald wanneer het \emph{uid} van de betreffende gebruiker tussen de 0 en de 999 ligt. Ook zal de gebruiker zijn wachtwoord in \emph{/etc/shadow} moeten hebben staan, of zal de login geblokkeerd moeten zijn. Het zal, wanneer de user gebruik maakt van de \texttt{sh}\index{sh} shell, deze omzetten naar \texttt{false}\index{false}. Dit zal dan worden geprint:
+\begin{lstlisting}
+#!/usr/bin/perl
+open F, "/etc/passwd" or exit;
+foreach my $line (<F>) {
+    if($line =~ m/[a-z]+:[x|!]:\d{1,3}:/) {
+        $line =~ s/\/sh/\/false/;
+        print $line;
+    }
+}
+\end{lstlisting}
+Zoals te zien biedt het gebruik van \texttt{perl}\index{perl} een andere kijk op het toepassen van \emph{scripting}. Het is ook zo dat er niet alleen gebruik gemaakt kan worden van \texttt{perl}\index{perl}, ook \texttt{python}\index{python} is een taaltje wat vaak voor dit soort doeleinden wordt gebruikt. 

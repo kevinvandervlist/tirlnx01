@@ -1,0 +1,316 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\documentclass{beamer}
+
+\mode<presentation>
+
+\usepackage[dutch]{babel}
+\usepackage{listings}
+%\usepackage{beamerthemesplit}
+
+\lstset{ %
+  language=bash,                % choose the language of the code
+  basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=lr,	                % adds left and right lines
+  tabsize=2,	                % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+%  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  morekeywords={esac,fi,elseif,*,...}            % if you want to add more keywords to the set
+}
+
+\usetheme{Berlin}
+\useinnertheme{rounded}
+\usecolortheme{rose}
+\setbeamertemplate{navigation symbols}{} 
+
+\title{Keuzevak Linux - Week 6}
+\author{Paul Sohier \and Kevin van der Vlist}
+\institute{Versie $1.0$}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame} 
+
+\begin{frame}
+  \frametitle{Inhoud}
+  \tableofcontents
+\end{frame}
+
+\section{Wat en waarom}
+
+\begin{frame}
+  \frametitle{Shell scripting - wat en waarom}
+  \begin{itemize}
+  \item<1-> reeks opdrachten
+  \item<2-> controle structuren
+  \item<3-> automatiseren taken
+  \item<4-> backups, gebruikers aanmaken, \ldots
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Shell scripting - begin}
+  \begin{itemize}
+  \item<1-> \texttt{shebang}: \texttt{\#!/bin/bash}
+  \item<2-> opdrachten of controle structuren
+  \item<3-> eindresultaat
+  \end{itemize}
+\end{frame}
+
+\section{Variabelen}
+
+\begin{frame}
+  \frametitle{Shell scripting - variabelen}
+  \begin{itemize}
+  \item<1-> loosely typed
+  \item<2-> refereren met \texttt{\$naam}%
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - variabelen}
+  \begin{lstlisting}
+#!/bin/bash
+var=2
+var2=5
+drie="drie"
+echo $var2
+echo "$var + $drie = $var2"
+  \end{lstlisting}
+  \begin{lstlisting}
+3
+2 + 3 = 5
+  \end{lstlisting}
+\end{frame}
+
+\section{Systeemvariabelen}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - systeemvariabelen}
+  \begin{itemize}
+  \item<1-> ingesteld door omgeving
+  \item<2-> export EDITOR=emacs
+  \item<3-> simpel te gebruiken
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - systeemvariabelen}
+  \begin{itemize}
+  \item \texttt{\$PATH}
+  \item \texttt{\$TERM}
+  \item \texttt{\$EDITOR}
+  \item \texttt{\$DISPLAY}
+  \item \ldots
+  \end{itemize}
+\end{frame}
+
+\section{if}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - if}
+  \begin{lstlisting}
+if [ "Pasen" == "Pinksteren" ];
+then
+    echo "sint-juttemis"
+fi
+  \end{lstlisting}
+\end{frame}
+
+\section{if/else}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - if/else}
+  \begin{lstlisting}
+if [ "appel" == "banaan" ];
+then
+    echo "onbereikbaar"
+else
+    echo "appel en banaan zijn ongelijk"
+fi
+  \end{lstlisting}
+\end{frame}
+
+\section{if/elseif/else}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - if/elseif/else}
+  \begin{lstlisting}
+if [ "geluid" == "hard" ];
+then
+    echo "geluid is hard"
+elseif [ "geluid" == "zacht" ];
+then
+    echo "geluid is zacht"
+else
+    echo "geluid is niet hard en niet zacht"
+fi
+  \end{lstlisting}
+\end{frame}
+
+\section{case/switch}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - case/switch}
+  \begin{lstlisting}
+functie="student"
+case "$functie" in
+    "student")
+        echo "student" ;;
+    "administratie")
+        echo "administratie" ;;
+    "docent")
+        echo "docent" ;;
+    *)
+        echo "geen match" ;;
+esac
+  \end{lstlisting}%$
+\end{frame}
+
+\section{while}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - while}
+  \begin{lstlisting}
+i=0
+while [ "$i" -lt "5" ]; do   
+  let i++
+  echo -n $i:
+done
+1:2:3:4:5:
+  \end{lstlisting}
+\end{frame}
+
+\section{until}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - until}
+  \begin{lstlisting}
+i=10
+until [ "$i" -lt "5" ]; do   
+  let i--
+  echo -n $i:
+done
+9:8:7:6:5:4:
+  \end{lstlisting}
+\end{frame}
+
+\section{functies}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - functies}
+  \begin{lstlisting}
+function hallofunc {
+
+}
+  \end{lstlisting}
+  \begin{lstlisting}
+hallofunc() {
+
+}
+  \end{lstlisting}
+\end{frame}
+
+\section{functievariabelen}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - functievariabelen}
+  \begin{lstlisting}
+function hallofunc {
+  echo hallo $1
+}
+
+hallofunc kevin
+  \end{lstlisting}
+  \begin{lstlisting}
+hallofunc() {
+  echo hallo $1
+}
+hallofunc kevin
+  \end{lstlisting}
+\end{frame}
+
+\section{Expressies}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - string expressies}
+  \begin{tabular}[t]{ll}
+    Expressie & Waar als\ldots \\
+    \hline
+    -z string & de lengte van de string 0 is \\
+    -n string & de lengte van string niet 0 is\\
+    string1 == string2 & de twee strings gelijk zijn\\
+    string1 != string2 & de twee strings ongelijk zijn\\
+    string & de string niet NULL is\\
+  \end{tabular}
+  \begin{lstlisting}
+if [ -z "$string" ]; then echo "lengte is 0"; fi
+  \end{lstlisting}%$
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - integer expressies}
+  \begin{tabular}[t]{ll}
+    expressie & waar als\ldots \\
+    \hline
+    int1 -eq int2 & 1 == 2\\
+    int1 -ne int2 & 1 != 2\\
+    int1 -gt int2 & 1 $> $ 2\\
+    int1 -ge int2 & 1 $\geq$ 2\\
+    int1 -lt int2 & 1 $< $ 2\\
+    int1 -le int2 & 1 $\leq$ 2\\
+  \end{tabular}
+  \begin{lstlisting}
+if [ "1" -lt "2" ]; then echo "1 < 2"; fi
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Shell scripting - file expressies}
+  \begin{tabular}[t]{ll}
+    Expressie & Waar als\ldots\\
+    \hline
+    -e file & file bestaat \\
+    -r file & file bestaat en is readable \\
+    -w file & file bestaat en is writeable \\
+    -x file & file bestaat en is executable \\
+    -f file & file bestaat en is een gewoon bestand \\
+    -d file & file bestaat en is een directory\\
+    -h file & file bestaat en is een symbolic link \\
+    -s file & file bestaat en de grote is meer als 0 \\
+  \end{tabular}
+  \begin{lstlisting}
+if [ -e "file" ]; then echo "file bestaat"; fi
+  \end{lstlisting}%$
+\end{frame}
+
+\end{document}

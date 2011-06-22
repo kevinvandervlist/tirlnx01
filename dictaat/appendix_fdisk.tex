@@ -1,0 +1,173 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Partities en fdisk}\label{app.fdisk}
+Een harddisk wordt meestal ingedeeld in partities. Voor de installtie van \emph{Linux} moeten er minimaal twee partities worden gemaakt. \'{E}\'{e}n partitie voor het algemene \emph{Linux filesysteem} en \'{e}\'{e}n partitie voor swap. Windows partitioneerd verplicht in een primaire en een extended partitie. Binnen de extended partitie kunnen vervolgens werer enkele logical partities aangemaakt worden. \emph{Linux} ondersteund echter meerdere primaire partities.
+
+\section{Fdisk}
+Om je SATA schijf te partioneren moet je het volgende commando gebruiken:
+\begin{lstlisting}
+fdisk /dev/sda
+\end{lstlisting}
+Dit commando zal de eerste aanwezige schijf nemen. Wil je een andere schijf? Verander dan de sda in bijvoorbeeld sdb. Als je het niet zeker weet, kan je via het command
+\begin{lstlisting}
+dmesg | less
+\end{lstlisting}dit vinden. \index{dmesg}\index{less}
+
+Type nu eerst m in om te zien welke opties fdisk allemaal heeft. Je krijgt onderstaand scherm:
+\begin{lstlisting}
+root@slackje:~# fdisk /dev/sda
+
+Command (m for help): m
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): 
+\end{lstlisting}
+Kies vervolgens 'p' om de huidige partitie instellingen te tonen.
+
+\begin{lstlisting}
+Command (m for help): p
+
+Disk /dev/sda: 26.8 GB, 26843545600 bytes
+255 heads, 63 sectors/track, 3263 cylinders, total 52428800 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x028f6a13
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *          63    10506509     5253223+  83  Linux
+/dev/sda2        10506510    41977844    15735667+  83  Linux
+/dev/sda3        41977845    52420094     5221125   82  Linux swap
+\end{lstlisting}
+Hier zijn al drie partities aanwezig. Deze handleiding gaat er van uit dat er geen partities aanwezig zijn, en deze partities hierboven zullen dan ook niet meer genoemd worden hieronder. Wanneer dit wel het geval is moet het eerstvolgende volg nummer gekozen worden. In dit geval is dat 4. Deze waarde moet onthouden worden. Kies vervolgens 'n' om een partitie toe te voegen.
+\begin{lstlisting}
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4, default 1): 1
+First sector (2048-52428799, default 2048): 2048
+Last sector, +sectors or +size{K,M,G} (2048-52428799, default 52428799): +10240M
+\end{lstlisting}
+Na 'n' is achtereenvolgens gekozen voor 'p', '1', '1'\footnote{In het voorbeeld is gekozen voor 2048, omdat deze harde schijf in gebruik is. Echter, bij een nieuwe installatie kies je voor 0.}  en '+10240M'. De 'p' staat voor primary partitie en de '1' voor het nummer. Vervolgens wordt om het cylinder nummer gevraagd. De waarde '1' geeft aan dat het begin van de harddisk gekozen wordt. Vervolgens dient de eind-cylinder van de partitie gegegeven te worden. De waarde '+10240M' staat voor 10 gigabte.
+Nu de hoofdpartitie is aangemaakt kan de swap partitie gemaakt worden. Hiervoor kan dezelfde procedure gebruikt worden, namelijk: 'n', 'p', '2', 'enter', '+128M' (Of meer\footnote{Het best kan je kiezen voor een SWAP partitie van 2 maal je RAM geheugen. Als je dus 2GB RAM hebt kan je het beste 4GB swap nemen.}). Nu is de tweede partitie aangemaakt met een grote die jij zelf gekozen hebt. Kies vervolgens 'p' om de partitie tabel te weergeven.
+\begin{lstlisting}
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4, default 2): 
+Using default value 2
+First sector (20973568-52428799, default 20973568): 
+Using default value 20973568
+Last sector, +sectors or +size{K,M,G} (20973568-52428799, default 52428799): +128M
+
+Command (m for help): p
+
+Disk /dev/sda: 26.8 GB, 26843545600 bytes
+255 heads, 63 sectors/track, 3263 cylinders, total 52428800 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x028f6a13
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1            2048    20973567    10485760   83  Linux
+/dev/sda2        20973568    21235711      131072   83  Linux
+\end{lstlisting}
+De paritite tabel geeft 2 partities weer. Beide hebben id 83 (Linux native). Dit is het standaard Linux type. Voor de tweede partitie moet dit veranderd worden in id 82 (Linux swap).
+Kies 't' voor het veranderen van het type, en vervolgs het partitie nummer '2'. Nu kan het id gegeven worden (82), of via de letter 'L' kan er een lijst van typen worden opgevraagd. Na het veranderen van het type kan via de optie 'p' een nieuw partitie overzicht gevraagd worden. Dit zal er dan zo uit zien:
+\begin{lstlisting}
+Command (m for help): t
+Partition number (1-4): 2
+Hex code (type L to list codes): 82
+Changed system type of partition 2 to 82 (Linux swap)
+
+Command (m for help): p
+
+Disk /dev/sda: 26.8 GB, 26843545600 bytes
+255 heads, 63 sectors/track, 3263 cylinders, total 52428800 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x028f6a13
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1            2048    20973567    10485760   83  Linux
+/dev/sda2        20973568    21235711      131072   82  Linux swap
+\end{lstlisting}
+Als laatste moet de optie 'a' gekozen worden om partitie '1' bootable te maken. Deze optie is van belang voor het installeren van een bootloader zoals LILO en voor het maken van een multi-boot systeem met bijvoorbeeld Windows. En het eindresultaat is dan zo:
+\begin{lstlisting}
+Command (m for help): a 
+Partition number (1-4): 1
+
+Command (m for help): p
+
+Disk /dev/sda: 26.8 GB, 26843545600 bytes
+255 heads, 63 sectors/track, 3263 cylinders, total 52428800 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x028f6a13
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048    20973567    10485760   83  Linux
+/dev/sda2        20973568    21235711      131072   82  Linux swap
+\end{lstlisting}
+Kies 'w' om de partitie instellingen op te slaan en fdisk te verlaten.
+
+Als je zelf een filesystem wilt maken op een partitie kan dit bijvoorbeeld met \texttt{mkfs}\index{mkfs}. Zie \texttt{man mkfs} voor meer informatie.
+
+
+\section{Swap}\index{swap}
+Het kan in sommige gevallen gebeuren dat de swap partitie niet in \emph{/etc/fstab}\index{/etc/fstab} staat. Om te controleren of je \emph{swap} hierin staat moet je het volgende doen:
+\begin{lstlisting}
+pico /etc/fstab
+[...]
+/dev/sda3       swap    swap    sw      0       0
+\end{lstlisting}
+Wanneer er geen regel instaat met \emph{swap} kan je de bovenstaande regel toevoegen. Hierbij is \emph{/dev/sda3} natuurlijk de \emph{swap partitie} die je zelf hebt gemaakt. Na het handmatig inschakelen van de \emph{swap} partitie via \texttt{swapon}, of na een herstart zal de\emph{swap} wel werken. Dit kan met \texttt{free}\index{free} worden gecontroleerd:
+\begin{lstlisting}
+paul@slackbak:~$ free -m
+             total       used       free     shared    buffers     cached
+Mem:          1001         78        923          0         19         31
+-/+ buffers/cache:         26        974
+Swap:         3067          0       3067
+\end{lstlisting}%$
+In de kolom ``free'' van de regel \emph{swap} zal bij een werkende \emph{swap} een getal groter dan nul staan. 

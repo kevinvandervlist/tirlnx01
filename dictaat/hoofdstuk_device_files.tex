@@ -1,0 +1,81 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Device files}\index{device file}
+Hardware wordt binnen \emph{Linux} gezien als een speciale file. Wanneer je een device wilt gebruiken, kan je dat gewoon op je filesystem benaderen. Er kan naartoe geschreven worden, maar er kan ook uit gelezen worden. Deze abstractie biedt voordelen omdat het het lezen en schrijven van devices erg simpel kan maken. Voor veel software is het namelijk helemaal niet nodig om op een erg laag niveau met de hardware te communiceren; alles wat ze willen is bijvoorbeeld het lezen van de toets die op je toetsenbord is ingedrukt. 
+
+Om het gebruik van deze speciale device files mogelijk te maken word er gebruik gemaakt van speciale device files. Dit zijn inodes die niet verwijzen naar een block op de disk, maar juist verwijzen naar een device. Dit word gedaan door naar het \emph{major} en \emph{minor} number van een device te wijzen. 
+
+Een \emph{major} device nummer is gerelateerd aan het type device. Deze zijn statisch in de kernel opgenomen\cite{bib.devices}. Wanneer we naar deze lijst kijken kunnen we bijvoorbeeld zijn dat de eerste \emph{tty} het \emph{major} device id \emph{4} krijgt. Daarnaast krijgt hij \emph{minor} device id het getal \emph{1}.
+\begin{lstlisting}
+  4 char        TTY devices
+                  0 = /dev/tty0         Current virtual console
+                  1 = /dev/tty1         First virtual console
+                    ...
+                 63 = /dev/tty63        63rd virtual console
+\end{lstlisting}
+Hieruit kunnen we dus opmaken dat /dev/tty0 een inode zou moeten hebben die verwijst naar \emph{major device} 4 en \emph{minor device} 1. Dit kunnen we controleren met \emph{stat}.
+\begin{lstlisting}
+root@slackbak:/# stat --printf="Inode:\t\t\t%i\nMajor:Minor device:\t%t:%T\nSize in bytes:\t\t%s\n" /dev/tty1
+Inode:                  1980
+Major:Minor device:     4:1
+Size in bytes:          0
+\end{lstlisting}
+
+\section{Device types}
+Er zijn twee hoofdgroepen van speciale devices. De meeste zullen behoren tot de groep \emph{character devices}. 
+
+\subsection{Character devices}
+Deze groep staat ook bekend onder de naam \emph{raw devices}. Dit komt omdat je ook directe toegang krijgt tot een device. Het is dus mogelijke omn alle lees-, en schrijf operaties moeten uitvoeren in de aard van het device. 
+
+Een virtuele terminal zal bijvoorbeeld gelezen en geschreven kunnen worden per karakter. Het zijn immers textuele ``apparaten''. Er kan dus op een simpele manier tekst van en naar een apparaat gestuurd worden. 
+
+\subsection{Block devices}
+Wanneer we het over een harde schijf gaan hebben zal dit anders worden, dan zullen we in hele sectoren gaan moeten lezen en schrijven. Dit kan handig zijn voor gebruik in combinatie met \texttt{dd}\index{dd}, maar het is iets wat je meestal niet wil. Wanneer je een paar bytes van een file wilt lezen is het natuurlijk onzinnig om de complete sector te moeten uitlezen. 
+
+Om dit gebruik te kunnen cachen, en daarmee veel schaalbaarder te kunnen maken voor de multi user omgeving die \emph{Linux} meestal is, zijn er voor onder andere schijven zogenaamde \emph{block devices}. Dit is een extra laag over het ruwe character device heen die het systeem in staat stelt om te cachen. Veel gebruikte blocks kunnen hierdoor dus in het werkgeheugen van een systeem blijven, wat de performance ten goede komt. 
+
+Omdat er buffers worden gebruikt heeft het wel als nadeel dat er data verloren kan gaan. Een systeem wat uitgaat voordat de buffers zijn \emph{geflusht}\index{flush} zal alle data in buffers kwijt zijn. Dit kan verholpen worden door de system call \texttt{flush()}, die de buffers zal synchroniseren met het onderliggende systeem. 
+
+\section{Belangrijke files}
+Omdat sommige device files erg veel gebruikt worden, of erg handige features hebben, zullen we een paar van de meest gebruikte devices uit te leggen. Er zal gekeken worden naar hoe ze gebruikt kunnen worden, en waar eventueel op gelet moet worden. 
+
+\subsection{null}\index{null}
+Dit device wordt ook wel de digitale prullenbak genoemd. Het \emph{null} device geeft een gebruiker namelijk een oneindig groot ``zwart gat'', wat alles weggooid wat er aan hem gegeven wordt. Het zal ook nooit output genereren. 
+
+Dit kan bijvoorbeeld erg handig zijn wanneer de output van een script stil moet zijn. Dit is iets wat vaak voorkomt wanneer een script als \emph{cron} word ingesteld. Er kan bijvoorbeeld gekozen worden om de standaard output door te sturen naar \emph{null}, maar om de error stream gewoon zijn gang te laten gaan. 
+% Gedaan omdat de lezers de syntax toch weer vergeten zijn. 
+\begin{lstlisting}
+kevin@slackbak:~$ mijnscript.sh 1> /dev/null 
+\end{lstlisting}%$
+Wanneer er gelezen word van \emph{null} zal er een \emph{EOF} gereturned worden. 
+
+\subsection{zero}\index{zero}
+Het \emph{zero} device zal, wanneer er uit gelezen wordt, alleen maar \emph{NULL} bytes (\textbackslash{}0) geretourneerd. Wanneer er naartoe geschreven wordt vertoond het hetzelfde gedrag als \emph{null}.
+
+\subsection{random}\index{random}
+Het \emph{random} device zal willekeurige data geven aan het programma wat hieruit leest. Omdat het de bedoeling is dat dit device fungeert als een echte random number generator, zal er geen data uitkomen als er te weinig entropie is. Dit betekend dat een \texttt{read()} call dus kan blocken tot er genoeg entropie is om aan het lezende proces te geven.
+
+Dit device dient gebruikt te worden bij toepassingen die hoge mate van entropie vereisen. 
+
+\subsection{urandom}\index{urandom}
+Het \emph{urandom} device doet hetzelfde als \emph{random} maar zal \emph{niet} blocking zijn. Het betekend wel dat er een concessie wordt gedaan op het gebied van entropie. Wanneer de interne entropie pool van het device (de kernel) leeg is, zal de pool hergebruikt worden. De output krijgt dus minder entropie. 
+
+Dit betekend dus in theorie dat het gebruik van \emph{urandom} minder veilig kan zijn als het gebruik van \emph{random}. Uiteraard hangt dit af van de functie waarvoor \emph{urandom} of \emph{random} gebruikt gaat worden.

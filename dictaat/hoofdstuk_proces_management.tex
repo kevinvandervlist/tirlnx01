@@ -1,0 +1,146 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Proces management}
+Een \emph{proces} is een actief programma op een machine. Onder actief wordt verstaan dat het programma een gedeelte van de \emph{systeem resources} wil gebruiken. Hiervoor zal het echter wel van de \emph{kernel} toegang moeten krijgen. 
+
+\section{Processen bekijken}
+Er zijn verschillende manier om te zien welke \emph{processen} er actief zijn. De meest gebruikte varianten zijn \texttt{ps}\index{ps} en \texttt{top}\index{top}. 
+\begin{lstlisting}
+kevin@slackbak:~$ man ps
+[...]
+-e              Select all processes. Identical to -A.
+-f              does full-format listing. [...]
+kevin@slackbak:~$ ps -ef 
+UID   PID PPID  C STIME TTY   TIME     CMD
+root  1   0     0 Dec07 ?     00:00:02 init [3]  
+root  2   0     0 Dec07 ?     00:00:00 [kthreadd]
+[...]
+root  2227 1406 0 10:48 ?     00:00:00 sshd: kevin [priv]
+kevin 2229 2227 0 10:48 ?     00:00:00 sshd: kevin@pts/0
+kevin 2230 2229 0 10:48 pts/0 00:00:00 -bash
+kevin 2280 2230 0 11:08 pts/0 00:00:00 ps -ef
+\end{lstlisting}
+Wanneer deze listing begrepen wordt is er veel informatie uit te halen. Aangezien dit belangrijke en handige informatie betreft, zullen alle kolommen de nodige uitleg krijgen. 
+
+\subsection{UID}
+Deze kolom bevat het \emph{effective uid} van het proces op de betreffende regel. Hier blijkt dus onder welke gebruiker een \emph{proces} effectief draait. 
+
+\subsection{PID}\index{pid}
+In deze kolom is het \emph{proces id}, of \emph{pid} te zien. Dit \emph{proces id} is een unieke identifier van een \emph{proces}, en kan daarom slechts eenmalig voorkomen. Dit \emph{pid} word gebruikt wanneer een bepaald proces moet worden gespecificeerd.
+
+\subsection{PPID}\index{parent pid}
+Dit is het \emph{parent proces id} van een \emph{proces}. Dit geeft het \emph{pid} weer van het proces wat (meestal met behulp van \emph{fork()} een \emph{child} proces heeft gestart. De relatie van een \emph{proces} met zijn parent is een heel belangrijke. Een proces kan namelijk niet leven zonder \emph{parent}. Als de parent sterft, zal het child proces ook mee gaan, tenzij deze is \emph{detached}. 
+
+\subsection{C}
+Dit is de integer representatie van het cpu gebruik. Het cijfer wordt als volgt berekend:
+$$ \frac{cputijd}{echte\_tijd} \cdot 100 = (int) bezetting$$
+\emph{cputijd} is hierbij de tijd waarin een proces zich in \emph{running state} bevindt, \emph{echte\_tijd} is de echte tijd. Het proces om deze \emph{PDF} te maken heeft de volgende kenmerken:
+\begin{lstlisting}
+real    0m15.877s
+user    0m8.221s
+\end{lstlisting}
+\emph{Cputijd} zou hier dus zijn:
+$$ \frac{8.221}{15.877} \cdot 100 = 51.7793034$$
+$$(int) bezetting = 51$$
+
+\subsection{STIME}
+De kolom \emph{STIME} bevat de start time van het \emph{proces}. 
+
+\subsection{TTY}
+In de kolom \emph{TTY} staat de \emph{terminal} waar het proces draait. 
+
+\subsection{TIME}
+Dit is de hoeveelheid \emph{cputijd} die een proces heeft gebruikt. Hoe hoger \emph{TIME} is, hoe actiever een \emph{proces} dus is. 
+
+\subsection{CMD}
+In deze laatste kolom is de naam van het \emph{proces} te zien, samen met de betreffende parameters. 
+
+\section{Termination} 
+Wanneer een \emph{proces} niet meer reageert, of taken gaat uitvoeren die niet binnen zijn takenpakket vallen, kan het zijn dat een proces afgeschoten moet worden. Het commando \texttt{kill}\index{kill} biedt deze mogelijkheid, door een \emph{signal} naar het proces te sturen. Deze \emph{signals} zijn onderdeel van de \emph{POSIX} standaard. De twee belangrijkste signals voor nu zijn \emph{SIGTERM} en \emph{SIGKILL}. Om te kijken wat dit precies betekend zou je in \texttt{man 7 signal} kunnen kijken.
+
+Het eerste \emph{signal} geeft een proces te kennen dat het be\"{i}ndigd moet worden. Het proces zal dan afsluiten: 
+\begin{lstlisting}
+kevin@slackbak:~$ sleep 10&
+[1] 2427
+kevin@slackbak:~$ kill 2427
+kevin@slackbak:~$ ps -ef | grep sleep
+kevin     2429  2230  0 12:28 pts/0    00:00:00 grep sleep
+[1]+  Terminated              sleep 10
+\end{lstlisting}%$
+Een \emph{proces} kan een \emph{SIGTERM} signal afvangen en negeren. Een andere mogelijkheid is dat een \emph{proces} ongedefinieerd gedrag gaat vertonen. Beide situaties kunnen resulteren in een proces dat niet is te stoppen door een \emph{SIGTERM} te sturen: 
+\begin{lstlisting}
+kevin@slackbak:~$ top&
+[1] 2430
+kevin@slackbak:~$ kill 2430
+[1]+  Stopped                 top
+kevin@slackbak:~$ ps -ef | grep top
+kevin     2430  2230  0 12:28 pts/0    00:00:00 top
+kevin     2434  2230  0 12:29 pts/0    00:00:00 grep top
+kevin@slackbak:~$ kill -9 2430
+kevin@slackbak:~$ ps -ef | grep top
+kevin     2436  2230  0 12:29 pts/0    00:00:00 grep top
+[1]+  Killed                  top
+\end{lstlisting}%$
+Het \emph{SIGHUP} \emph{signal} kan ook door programmeurs worden afgevangen. Dit signal wordt veel gebruikt om een \emph{proces} te laten herstarten. De werking is weer hetzelfde. 
+\begin{lstlisting}
+kevin@slackbak:~$ kill -HUP 1337
+\end{lstlisting}%$
+Na het uitvoeren van het \texttt{kill}\index{kill} commando met \emph{PID} 1337 als parameter, zal het \emph{proces} met 1337 als \emph{PID} herstarten zonder dat deze afsluit. 
+
+\section{Zombies}\index{zombie}
+\emph{Zombie processen} zijn een speciaal soort processen. Deze processen zijn klaar met het uitvoeren van hun taken en zouden dus moeten verdwijnen uit de \emph{process table}. De \emph{parent} van een \emph{proces} heeft echter nog de mogelijkheid om de exit status van een \emph{child proces} te bekijken. Wanneer dit niet gebeurd, zal het proces nog aanwezig blijven in de \emph{process table}. \emph{Zombie's} zijn per definitie \emph{processen} die geen \emph{resources} gebruiken, dus de enige 'last' die een gebruiker ervan ondervindt is de entry in de \emph{process table}. 
+
+Een \emph{zombie proces} afschieten is niet altijd mogelijk. Wanneer een \emph{zombie proces} een \emph{parent pid} heeft, is het mogelijk om de \emph{parent} af te sluiten. \emph{Childs} zullen hierdoor ook sterven, waardoor de \emph{zombie} weg is. 
+
+Wanneer een \emph{zombie} \texttt{init}\index{init} (pid 1) als \emph{parent} heeft, zal het onmogelijk zijn het \emph{proces} af te sluiten. De enige manier om de \emph{zombie} dan weg te krijgen is een complete reboot. 
+
+\section{Load}
+\emph{Load}\cite{bib.load} is een belangrijk getal in de \emph{Linux} wereld. De getallen bij \emph{load} geven aan hoe druk de \emph{CPU} is, maar het interpreteren van het getal gebeurd vaak fout.
+
+De \emph{load} kan via diverse commando's opgevraagd worden, te weten:
+\begin{itemize}
+  \item \texttt{uptime}\index{uptime}
+  \item \texttt{w}\index{w}
+  \item \texttt{top}\index{top}
+  \item De file \emph{/proc/loadavg}\index{/proc/loadavg}
+\end{itemize}
+Alle commando's zullen (In principe) dezelfde waarde teruggeven als resultaat.
+
+Bij een computer die niets zal te doen zal de \emph{load} 0.00 zijn.\footnote{\emph{UNIX} en \emph{Linux} verschillen in het berekenen van de \emph{load}. \emph{UNIX} gebruikt alleen de processen welke in \emph{RUNNING} of \emph{RUNNABLE} state zijn, terwijl \emph{Linux} ook de processen in de \emph{uninterruptible} state meerekent. }
+Wanneer je het commando \texttt{load} uitvoert komen er drie cijfers uit: 
+\begin{lstlisting}
+paul@slackbak:~$ uptime  
+ 16:47:37 up 6 days, 17:37,  1 user,  load average: 0.00, 0.00, 0.00
+\end{lstlisting}%$
+Zoals te zien heeft onze server momenteel niets te doen.
+
+\begin{lstlisting}
+srv01:~# uptime 
+ 17:05:30 up 224 days,  3:01,  1 user,  load average: 2.37, 3.42, 0.39
+\end{lstlisting}
+Deze server heeft het een stuk drukker. De drie waardes geven de \emph{load} aan van de laatste minuut, vijf minuten en vijftien minuten. In het geval van hierboven staat er:\footnote{Let op: Dit voorbeeld gaat uit van \'{e}\'{e}n \emph{CPU core}. Wanneer er meer als \'{e}\'{e}n core is, dan moet er in plaats van \'{e}\'{e}n het aantal cores van de load afgehaald worden.}
+\begin{itemize}
+  \item In de laatste minuut was de \emph{CPU} overbelast met \emph{137\%}.
+  \item In de laatste vijf minuten was de \emph{CPU} overbelast met \emph{242\%}.
+  \item In de laatste vijftien minuten was de \emph{CPU} onderbelast met \emph{61\%}.
+\end{itemize}
+Wanneer de \emph{CPU} 1,37 keer sneller was geweest als de huidige \emph{CPU} dan had de \emph{CPU} alle taken in die minuut kunnen uitvoeren.
+Een \emph{load} van precies 1.00 betekend dat de \emph{CPU}, indien er \'{e}\'{e}n core is, volledig gebruikt wordt voor die minuut. Als je bijvoorbeeld 4 cores ter berschikking hebt en een \emph{load} van 4.00, betekend dit hetzelfde als een \emph{load} van 1.00 bij een enkele core.

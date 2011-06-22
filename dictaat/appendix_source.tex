@@ -1,0 +1,125 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Source installatie}\label{app.source}
+Van veel populaire softwarepakketten zullen Slackware packages beschikbaar zijn. Deze packages hebben een aantal voordelen, waardoor ze gemakkelijk en gebruiksvriendelijk zijn in de praktijk. Voor meer details, zie bijlage \ref{app.package} \emph{Slackware Packages}. 
+
+\section{Achtergrond}
+Wanneer een bepaald stuk software niet beschikbaar is als Slackware package betekend het niet dat het onmogelijk is dit pakket te gebruiken. Er is echter alleen geen gebruiksvriendelijke manier om de packages te installeren. Gebruikers dienen in dit geval zelf een zogenaamde \emph{source install} te doen. 
+
+Omdat problemen tijdens een \emph{source install} vrij cryptisch over kunnen komen, zullen we naast de uitleg van de installatie zelf nog het een en ander vertellen over de tools die worden gebruikt voor de installatie. Dit kan lezers van het document eventueel goed op weg helpen om eventuele problemen op te lossen. 
+
+\subsection{Voordelen}
+Het grootste voordeel van een source installatie is de flexibiliteit. Je bent niet afhankelijk van de meegecompileerde opties die een packager voor jou logisch vindt. Wanneer er gebruik gemaakt word van repositories gebeurd het namelijk regelmatig dat er features missen in software die je eigenlijk toch wel wilt gebruiken. Deze features hebben vaak een \emph{--enable} flag in het configure script. 
+
+Ook is software vaak nieuwer dan uit repositories. Je kunt immers zelf kiezen welke versie je wilt installeren. Niemand zal je dus tegenhouden wanneer je een beta versie wilt gebruiken. Ook hoef je niet te wachten totdat de packager tijd heeft gehad om de gebruikte package te updaten. 
+
+\subsection{Nadelen}
+Er zijn echter wel een aantal erg belangrijke nadelen. De grootste is de extra tijd die je kwijt bent aan onderhoud. Wanneer je zelf software compileert, en je wilt je pakket upgraden zal je de source moeten downloaden, opnieuw \emph{configure} moeten runnen, daarna eventuele dependencies resolven, om vervolgens weer een complete compilatie van het pakket te doen. Dit is een tijdrovende business. 
+
+Een ander groot nadeel is het gebrek aan updates. Door het bovenstaande nadeel zullen source installs vaak achterlopen op stable releases van het software pakket. Wanneer er (grote) beveiligingslekken te vinden zijn, en je dit niet direct door hebt ben je langer kwetsbaar voor aanvallen. Je zult dus actiever je software bij moeten houden. 
+
+\section{Hoe gaan we te werk}\index{source install}
+Een source installatie zelf is vrij simpel, het is puur de compilatie van de broncode van een bepaald project. Deze compilatie heeft echter verschillende afhankelijkheden van het systeem waar het op draait, zodat er vaak erg unieke situaties ontstaan. Deze verschillen tussen systemen zijn vaak in de loop der tijd ontstaan, en hebben meestal te maken met de locatie van de zogenaamde \emph{dependencies}, afhankelijkheden voor de compiler en de linker. Een andere oorzaak zijn verschillen in systemcalls tussen verschillende besturingssystemen. 
+
+In dit voorbeeld zullen we het programma \emph{netcat} installeren. De website hiervan is hier te vinden: \url{http://netcat.sourceforge.net}. 
+
+\subsection{Source download}
+Om te beginnen hebben we de sourcecode van het programma nodig. Download versie 0.7.1. Dit is op het moment van schrijven de meest recente versie. 
+\begin{lstlisting}
+kevin@slackbak:~$ wget http://garr.dl.sourceforge.net/sourceforge/netcat/netcat-0.7.1.tar.bz2
+[...]
+2010-12-13 11:32:45 (2.31 MB/s) - "netcat-0.7.1.tar.bz2" saved [325687/325687]
+
+\end{lstlisting}%$
+Het is aan te raden bij belangrijke software de integriteit van het programma te controleren. Zo weet je dat de download niet corrupt is geraakt, of dat deze eventueel door malafide derde partijen is aangepast. Dit kan als volgt. 
+\begin{lstlisting}
+kevin@slackbak:~$ wget http://netcat.sourceforge.net/signatures/md5sums.txt
+kevin@slackbak:~$ md5sum -c md5sums.txt netcat-0.7.1.tar.bz2 2> /dev/null | grep netcat-0.7.1.tar.bz2
+netcat-0.7.1.tar.bz2: OK
+\end{lstlisting}\index{md5sum}
+Nu we weten dat het archief correct is gedownload kunnen we het gaan uitpakken. 
+\begin{lstlisting}
+kevin@slackbak:~$ tar -xjf netcat-0.7.1.tar.bz2
+\end{lstlisting}%$
+Wanneer er gebruik word gemaakt van een \emph{gzip}\index{gzip} in plaats van een \emph{bzip2}\index{bzip2} zal de ``j'' vervangen moeten worden met een ``z''.
+
+Als de \emph{signature} niet correct was, is het verstand het archief opnieuw te downloaden. Blijkt bij deze tweede controle weer een foute \emph{MD5} signature, is er (Als die optie aangeboden wordt) nog een mogelijkheid tot downloaden via een andere mirror. Het kan echter wel slim zijn de maker te informeren over een mogelijke aangepast archief, door derde personen.
+
+\subsection{configure}\index{configure}
+Om alle systeem afhankelijkheden te onderzoeken kan het \emph{configure} script worden gedraaid. Dit zal de zogenaamde \emph{Makefiles}\index{makefile} genereren welke gebruikt kunnen worden om de software te compileren. \emph{Configure} zorgt er ook voor dat de platform specifieke compileer instructies worden toegepast. 
+
+Deze file is in bijna alle \emph{GNU} source trees te vinden, het is ook deel van de richtlijnen voor \emph{GNU} software. Dit komt omdat de \emph{GNU Foundation} programmeurs aanraad om allemaal gebruik te maken van de \emph{GNU Build System}\cite{bib.gnu.autotools}. Dit geeft programmeurs veel handige utilities om een source tree zo neer te zetten dat deze op een generieke manier te gebruiken is. 
+
+Om alle opties van het configure script te bekijken kan er om help informatie gevraagd worden.
+\begin{lstlisting}
+kevin@slackbak:~$ cd netcat-0.7.1/
+kevin@slackbak:~/netcat-0.7.1$ ./configure --help
+\end{lstlisting}
+Er zullen nu heel veel opties van het configure script worden geprint. Veel ervan zullen een goede default value hebben, maar een gebruiker zou default values aan kunnen willen passen. Eventueel kunnen er extra parameters op gegeven worden. 
+
+We zullen zorgen dat we netcat als gewone gebruiker kunnen installeren. Je hoeft dus geen root te zijn om software te kunnen installeren. 
+\begin{lstlisting}
+kevin@slackbak:~/netcat-0.7.1$ ./configure --prefix=$HOME/software/netcat
+\end{lstlisting}\index{\$HOME}
+Nu zullen alle systeem checks worden uitgevoerd. Hierna zullen ook alle \emph{makefiles} worden voorbereid om te installeren in de software/netcat directory van je home map. 
+
+\subsection{make}
+Wanneer het script klaar is met uitvoeren en er geen fouten gemeld zijn, zullen alle makefiles klaargemaakt zijn, en kan er worden begonnen met het compileren van de software. Dit is een erg simpele stap.
+\begin{lstlisting}
+kevin@slackbak:~/netcat-0.7.1$ make
+\end{lstlisting}%$
+Alle sourcecode zal nu worden gecompileerd zodat we het daadwerkelijke programma krijgen. Mocht de compilatie onverhoopt toch mislukken zal \emph{Make}\index{make} dit melden. Je kan dan de code eventueel \emph{patchen}\index{patch} zodat deze wel compileert. 
+
+\subsection{make install}
+Nu \emph{Make} de code succesvol heeft gecompileerd is het mogelijk om de code te installeren. Ook dit is weer erg simpel omdat er een \emph{install} target is gespecificeerd. 
+\begin{lstlisting}
+kevin@slackbak:~/netcat-0.7.1$ make install
+\end{lstlisting}%$
+Nu zal make de gecompileerde binaries installeren in de vooraf opgegeven locaties. In ons geval zal er dus een installatie te vinden moeten zijn in \emph{\customtilde/software/netcat}. 
+\begin{lstlisting}
+kevin@slackbak:~$ file software/netcat/bin/netcat 
+software/netcat/bin/netcat: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), not stripped
+\end{lstlisting}\index{file}%$
+De binary is er inderdaad te vinden. Nu kunnen we het nog testen. 
+\begin{lstlisting}
+kevin@slackbak:~$ export PATH=$PATH:software/netcat/bin/
+kevin@slackbak:~$ which netcat 
+/home/kevin/software/netcat/bin/netcat
+kevin@slackbak:~$ netcat --help
+GNU netcat 0.7.1, a rewrite of the famous networking tool.
+\end{lstlisting}\index{export}\index{\$PATH}\index{which}
+Netcat is nu succesvol geinstalleerd, in de home map van de gebruiker. 
+
+\subsection{Source management}
+Om de ge\"{i}nstalleerde software te kunnen de\"{i}nstalleren is de makkelijkste optie om de source directory te bewaren. Ook kan dit handig of nodig zijn wanneer er software word gecompileerd die een afhankelijkheid heeft op een eerder pakket. 
+
+Het is gebruikelijk om de sources op een vaste locatie te bewaren, en niet zomaar in de home map van de gebruiker zoals hierboven beschreven. In principe zijn de volgende conventies aan te raden. 
+\begin{itemize}
+\item[1.] Systeem brede sources.
+\begin{lstlisting}
+/usr/local/src
+\end{lstlisting}\index{/usr/local/src}
+\item[2.] Gebruiker specifieke sources.
+\begin{lstlisting}
+$HOME/src/
+\end{lstlisting}%$
+\end{itemize}\index{\$HOME}
+Op deze manier staat alle software op een algemene locatie, en kan er wanneer nodig gemakkelijk een uninstall target gerund worden. Mocht je software hebben die afhankelijk is van een ander pakket, is het ook gemakkelijk hier naartoe te verwijzen. 

@@ -1,0 +1,236 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Het systeem}
+Nu het systeem gereed is, kan er begonnen worden met werken in de installatie. Het begint natuurlijk met een inlog prompt: 
+\begin{lstlisting}
+slackbak login: 
+\end{lstlisting}
+Na de installatie is er maar \'{e}\'{e}n gebruiker beschikbaar, de zogenaamde \emph{root account}\index{root}. Het wachtwoord van deze gebruiker is opgegeven tijdens de installatie. Na het inloggen kan er begonnen worden met de configuratie van het systeem.
+
+\section{root}
+De gebruiker ``root'' heeft alle rechten op het systeem. Het is daarom erg gevaarlijk om onder dit account te werken. E\'{e}n verkeerd commando en het systeem is vernietigd\footnote{rm -rf /tmp/ vs rm -rf /tmp /}. Het ``root'' account dient daarom alleen gebruikt te worden wanneer dit noodzakelijk is. Als het dan toch gebruikt moet worden, maak dan gebruik van de volgende stappen\footnote{by Matt Welsh}:
+\begin{itemize}
+  \item[1.] Ga op je handen zitten.
+  \item[2.] Denk na over wat je wilt doen.
+  \item[3.] Typ de commando's in.
+  \item[4.] Ga weer op je handen zitten.
+  \item[5.] Denk na over de consequentie van het commando.
+  \item[6.] Toets ``enter''.
+  \item[7.] Log uit of ga naar 1.
+\end{itemize}
+
+Zo op het eerste gezicht zal dit misschien erg overtrokken overkomen. Iedere gebruiker die al wat langer met \emph{UNIX} werkt zal echter kunnen vertellen dat de bovenstaande procedure een echte \emph{lifesaver} is. De meeste mensen hebben wel een keer meegemaakt dat ze iets uitvoerden waar ze na het intoetsen van ``enter'' al spijt van hadden.
+
+\subsection{root worden}
+Om root te worden volstaat het om het commando \texttt{su}\index{su} in te typen in de shell. Er zal nu om het wachtwoord gevraagd worden. Als dit goed is, zal de gebruiker een onbeperkte shell gepresenteerd krijgen. 
+
+\section{Reboot, Shutdown \& Runlevels}
+Ook een \emph{Linux} systeem dient natuurlijk op een correcte manier gestart en gestopt te worden. Dit kan echter wel op verschillende manieren. Achter de schermen gebeurt er meestal hetzelfde, zoals het \emph{flushen} van openstaande buffers naar de \emph{harde schijf}, of het netjes afsluiten van draaiende \emph{services}. Het afsluiten kan op de volgende manieren: 
+\begin{itemize}
+  \item[1.] \texttt{init 0}\index{init}
+  \item[2.] \texttt{halt}\index{halt}
+  \item[3.] \texttt{shutdown}\index{shutdown}
+\end{itemize}
+
+Een \emph{reboot} kan op de volgende manieren:
+\begin{itemize}
+  \item[1.] \texttt{init 6}\index{init}
+  \item[2.] \texttt{reboot}
+  \item[3.] \texttt{shutdown -r}
+\end{itemize}
+
+De reden dat dit op verschillende manier gedaan kan worden heeft te maken met de geschiedenis van \emph{Linux}. Wanneer \texttt{shutdown}\index{shutdown} wordt aangeroepen, zal er eerst een \emph{SIGTERM} signal verstuurd worden naar alle processen. Ook zal login \emph{blocking} worden en zullen gebruikers genotificeerd worden dat het systeem down gaat. De \emph{shutdown} of \emph{reboot} word dus aangekondigd. Hierna wordt er achter de schermen aan init gevraagd om het \emph{runlevel} te wijzigen naar het gevraagde niveau. Wanneer er gebruik gemaakt wordt van \texttt{halt}\index{halt} zal er direct een \emph{SIGKILL} signal naar de actieve processen gestuurd worden. Aangezien dit signal niet door het proces zelf kan worden genegeerd, krijgen actieve processen geen kans om gebruikers nog dingen te vragen\footnote{Een duidelijk voorbeeld is het afsluiten wanneer een \emph{tekst editor} nog data heeft die nog niet is opgeslagen. Er zal nu geen dialoog worden getoond met de vraag of er nog moet worden opgeslagen}. Dit kan resulteren in dataverlies. Tegenwoordig zal een aanroep aan halt standaard worden doorgewezen naar shutdown, omdat dit gebruiksvriendelijker is en beter voor de consistentie van het systeem. Het zal immers een unieke gelegenheid zijn als men geen gebruik wilt maken van een nette afsluit procedure. Tegenwoordig dient er om dat doel te bereiken dan ook een speciale \emph{flag} mee worden gegeven aan \texttt{halt}\index{halt}:
+\begin{lstlisting}
+kevin@slackbak:~$ man halt
+[..]
+       -f     Force halt or reboot, don't call shutdown(8).
+\end{lstlisting}%$ 
+
+Als laatste is er \texttt{init}\index{init}, welke direct de \emph{runlevels} modificeerd. Een \emph{runlevel} is een gevolg van een \emph{System V} gebaseerde systeem initialisatie. Ieder \emph{runlevel} heeft bepaalde taken die in dat niveau worden uitgevoerd. \emph{Slackware} maakt gebruik van de volgende \emph{runlevels}: 
+
+\begin{tabular}[t]{ll}
+  \hline
+  Runlevel & Taken\\
+  \hline
+  0 & Halt het systeem\\
+  1 & Single user mode\\
+  2,3 & Multi User Mode - Default\\
+  4 & 3 + X11\\
+  6 & Reboot het systeem\\
+\end{tabular}
+
+\section{Aanmaken van gebruikers}
+\emph{Linux} is een zogenaamd \emph{multi-user} operating system. Dit betekent dat meerdere gebruikers gemakkelijk van hetzelfde systeem gebruik kunnen maken. Dit kan zijn via netwerk gerelateerde diensten als remote terminals zoals \emph{ssh}\index{ssh}, maar ook met meerdere hardware sets, zodat er meerdere werkplekken op een systeem ontstaan. 
+
+Voordat er van het bovenstaande gebruik gemaakt kan worden, zal een gebruiker eerst een \emph{account} moeten krijgen op een systeem. Dit kan met behulp van het commando \texttt{adduser}\index{adduser}.
+\begin{lstlisting}
+root@slackbak:/home/kevin# adduser klaasvaak
+Login name for new user: klaasvaak
+User ID ('UID') [ defaults to next available ]: 
+Initial group [ users ]: 
+Additional UNIX groups:
+[...]
+: 
+Home directory [ /home/klaasvaak ] 
+Shell [ /bin/bash ] 
+Expiry date (YYYY-MM-DD) []: 
+New account will be created as follows:
+---------------------------------------
+Login name.......:  klaasvaak
+UID..............:  [ Next available ]
+Initial group....:  users
+Additional groups:  [ None ]
+Home directory...:  /home/klaasvaak
+Shell............:  /bin/bash
+Expiry date......:  [ Never ]
+\end{lstlisting}
+
+\section{Terminals}
+Het inloggen in \emph{Linux} gebeurt in een terminal. Standaard wordt er gestart met terminal 1. Toets ``alt + F2'' en terminal 2 verschijnt. Standaard start \emph{Slackware} zes terminals. Zes verschillende of dezelfde gebruikers kunnen tegelijk ingelogd zijn. Een terminal heet \emph{tty}:\index{tty}
+
+\begin{lstlisting}
+kevin@slackbak:~$ ps -ef | grep tty
+kevin 1585 1 0 20:32 tty1 00:00:00 -bash
+root  1586 1 0 20:32 tty2 00:00:00 /sbin/agetty 38400 tty2 linux
+root  1587 1 0 20:32 tty3 00:00:00 /sbin/agetty 38400 tty3 linux
+root  1588 1 0 20:32 tty4 00:00:00 /sbin/agetty 38400 tty4 linux
+root  1589 1 0 20:32 tty5 00:00:00 /sbin/agetty 38400 tty5 linux
+root  1590 1 0 20:32 tty6 00:00:00 /sbin/agetty 38400 tty6 linux
+\end{lstlisting}%$
+Hier is een overzicht te zien van alle \emph{processen} die zijn gerelateerd aan de \emph{tty}. \texttt{agetty}\index{agetty} is een proces wat ervoor zorgt dat er een nieuwe \emph{tty} verbinding kan worden geopend. Hierna zal er een login prompt worden gestart. Er kan dan worden ingelogd op de \emph{terminal}. In het bovenstaande voorbeeld is te zien dat op de tweede \emph{tty} een gebruiker met de naam ``kevin'' is ingelogd. Deze maakt gebruik van de \emph{Bash} shell. \index{Bash}
+
+\section{Mountpoint}
+Tijdens het starten van \emph{Linux} worden er automatisch bepaalde partities beschikbaar gemaakt. Dit wordt \emph{mounten} genoemd. Deze automatische \emph{mounts} komen uit een speciale file, namelijk \emph{/etc/fstab}. Deze config file bevat dus de zogenaamde \emph{statische mountpoints}. Wanneer er een bepaalde partitie, bijvoorbeeld \emph{root (/)} \emph{gemount} moet worden, zal dit gedefini\"{e}erd moeten zijn in \emph{fstab}. Een voorbeeld van deze file is hieronder te zien: \index{fstab}\index{/}\index{/etc/fstab}
+\begin{lstlisting}
+kevin@slackbak:~$ cat /etc/fstab
+/dev/sda1   /             ext4     defaults         1   1
+/dev/sda2   /home         ext4     defaults         1   2
+/dev/fd0    /mnt/floppy   auto     noauto,owner     0   0
+devpts      /dev/pts      devpts   gid=5,mode=620   0   0
+proc        /proc         proc     defaults         0   0
+tmpfs       /dev/shm      tmpfs    defaults         0   0
+/dev/sda3   swap          swap     sw               0   0
+\end{lstlisting}%$
+Hier valt dus te zien dat de eerste partitie van de eerste schijf met type \emph{EXT4} automatisch met default mount opties wordt gemount op de root van het systeem. Zo geldt het ook voor de andere regels. De mountpoints \emph{devpts}, \emph{proc} en \emph{tmpfs} zijn speciale mounts. 
+
+\subsection{Devpts}\index{devpts}
+Dit mountpoint bevat alle \emph{pseudo terminals} die geassocieerd zijn met het systeem. Alle programmatuur die gebruik maakt van input en output van userdata (\emph{ssh} en consorten) zal van input devices moeten lezen en naar output devices moeten schrijven. Deze \emph{pseudo terminals} zijn virtual devices die in deze behoefte voorzien. Een \emph{ssh}\index{ssh} sessie registreert bijvoorbeeld een virtueel toetsenbord, dat door \emph{Bash} gebruikt kan worden om input te lezen. Om een wildgroei (en een limiet aan \emph{pseudo devices}) te voorkomen is er een speciale \emph{multiplexer} geschreven welke de afhandeling van alle \emph{pseudo devices} regelt. Dit gebeurt binnen het \emph{devpts} filesystem. 
+
+\subsection{Proc}\index{proc}
+Dit mountpoint is een manifestatie van interne datastructuren van de \emph{Linux} kernel. Dit is duidelijker te maken met een voorbeeld:
+\begin{lstlisting}
+kevin@slackbak:~$ ps -ef | grep udevd
+root 1016 1 0 13:49 ? 00:00:00 /sbin/udevd --daemon
+kevin@slackbak:~$ cat /proc/1016/cmdline 
+/sbin/udevd--daemon
+kevin@slackbak:~$ cat /proc/version 
+Linux version 2.6.33.4-smp (root@midas) (gcc version 4.4.4 (GCC) ) #2 SMP Wed May 12 22:47:36 CDT 2010
+\end{lstlisting}%$
+Hier is dus te zien dat de \emph{command line argumenten} van draaiende processen terug te vinden is in het \emph{proc} file system. Veel ervan is read-only, maar sommige kernel variabelen zijn te veranderen door te schrijven naar de speciale files binnen \emph{proc}.
+
+\subsection{Tmpfs}\index{tmpfs}
+Het \emph{mountpoint} \emph{tmpfs} staat voor \emph{temporary file system}. Sinds kernel versie 2.4 en groter is dit speciale type file system beschikbaar. Het bestaat uit gealloceerde \emph{memory pages}. De hoevelheid \emph{pages} kan dynamisch groeien indien gewenst. Een andere optimalisatie is dat weinig gebruikte \emph{pages} door de \emph{memory manager} naar de \emph{swap space}\index{swap} verplaatst kunnen worden. Ze zullen dus niet onnodig in het \emph{RAM}\index{RAM} blijven zitten. Dit filesystem kan worden gebruikt om data ``op te slaan'', maar toch in het geheugen te kunnen bewerken. Denk bijvoorbeeld aan tijdelijke opslag. 
+
+\subsection{Swap}\index{swap}
+\emph{Swap space} is secundaire memory space voor de \emph{Linux} kernel. Dit wordt gebruikt wanneer de hoeveelheid beschikbaar \emph{RAM} te klein wordt. Er kan dan uitgeweken worden naar de \emph{swap space}. De \emph{swap} is een speciaal geformatteerde partitie, of speciale file \emph{op} een partitie, welke gebruikt kan worden om ongebruikte \emph{memory pages} weg te schrijven. De \emph{swap} is wel merkbaar trager als het \emph{RAM} geheugen. Er moet dus voorkomen worden in veel gevallen dat de \emph{swap} gebruikt wordt.
+
+\subsection{Mount}
+
+Zelf een \texttt{mount}\index{mount} actie uitvoeren is erg simpel. Dit kan bijvoorbeeld als volgt: 
+\begin{lstlisting}
+mount -t vfat /dev/sdb1 /mnt/usbstick
+\end{lstlisting}
+Nu wordt \emph{device sdb, partitie 1} door \texttt{mount}\index{mount} aan \emph{/mnt/usbstick} gekoppeld. Het type van het \emph{file system} is expliciet opgegeven als zijnde \emph{FAT}. Dit is niet altijd nodig, aangezien moderne implementaties van \texttt{mount}\index{mount} zelf kunnen bepalen wat het type \emph{file system} is. Het weglaten van de optie '-t' volstaat dan. 
+
+Met \texttt{mount} valt te zien welk \emph{file systems} momenteel \emph{gemount} zijn. Zoals te zien is staat de usb stick er ook bij:
+\begin{lstlisting}
+kevin@slackbak:~$ mount
+/dev/root on / type ext4 (rw,relatime,barrier=1,data=ordered)
+proc on /proc type proc (rw)
+sysfs on /sys type sysfs (rw)
+usbfs on /proc/bus/usb type usbfs (rw)
+/dev/sda2 on /home type ext4 (rw)
+tmpfs on /dev/shm type tmpfs (rw)
+/dev/sdb1 on /mnt/usbstick type vfat (rw)
+\end{lstlisting}%$
+\texttt{umount}\index{umount} kan worden gebruikt om het \emph{mounted file system} te ontkoppelen. Het device is dan dus niet meer beschikbaar voor het systeem: 
+\begin{lstlisting}
+umount /mnt/usbstick
+\end{lstlisting}
+Hierna kan via \texttt{mount} gecontroleerd worden of dit ook echt het geval is.
+
+\section{Slackware Package}
+Alle ge\"{i}nstalleerde software is tijdens de installatie van internet gehaald. Wanneer er bepaalde pakketten vervangen moeten worden, of als er nieuwe software ge\"{i}nstalleerd moet worden kan dit op twee manieren. Het gewenste pakket kan van de \emph{Slackware} website of van de \emph{Slackware cd-rom} gehaald worden en met de \emph{package manager} ge\"{i}nstalleerd worden. Een andere manier is de software in \emph{source-code} vorm te installeren. Voor meer informatie over de \emph{Slackware package manager} zie bijlage \ref{app.package} en voor \emph{source-code installatie} zie bijlage \ref{app.source}.
+
+\section{De man pages}\label{man}
+E\'{e}n van de belangrijkste commando's op het systeem is \texttt{man}\index{man}\cite{bib.man}\cite{bib.ldp}. Dit commando geeft een \emph{manual} over een programma weer. Hier is in te vinden wat het programma doet en hoe het werkt. Mocht iets niet duidelijk zijn dan is met \texttt{man}\index{man} altijd meer uitleg te vinden:
+\begin{lstlisting}
+man man
+\end{lstlisting}
+Dit is alles wat er over het commando bekend moet zijn. De parameter \emph{man} zorgt dat de \emph{manual} van het programma \texttt{man} geopend wordt. Deze \emph{manuals} zijn op een vaste manier opgebouwd, de structuur is bij iedere andere \emph{manual} terug te zien. 
+\begin{itemize}
+  \item[1] \emph{TITLE}: Bovenaan de pagina staat de titel van de pagina en welke \emph{manual} wordt weergeven\footnote{Er kunnen meerdere manual pages voor een titel zijn: \texttt{man open}\index{man} en \texttt{man 3 open}\index{man}}. In dit geval is het \emph{man(1)}.
+  \item[2] \emph{NAME}: Nogmaals de naam van het commando en eventuele synoniemen en een korte omschrijving.
+  \item[3] \emph{SYNOPSIS}: De \emph{synopsis} of \emph{syntax} is de manier waarop het commando gebruikt dient te worden. In het geval van \texttt{man} is dit \texttt{man [acdfFhkKtwW] [-m system] [-o string] [-C config\_file] [-M path] [-P pager] [-S section\_list] [section name] \ldots}\index{man}. Alle delen tussen de haken ``[ ]''  zijn eventuele opties. Wanneer deze worden weggelaten ontstaat er \texttt{man name}\index{man}. Dit is te testen door bijvoorbeeld \texttt{man man}\index{man} of \texttt{man ls}\index{man}.
+  \item[4] \emph{DESCRIPTION}: Is een uitgebreidere omschrijving van de mogelijkheden van het commando.
+  \item[5] \emph{OPTIONS}: Hier worden alle mogelijke \emph{configuratie switches} van het commando beschreven.
+  \item[6] \emph{SEE ALSO}: Is een overzicht van verwante commando's.
+\end{itemize}
+De \emph{manual page} wordt weergeven door middel van het programma \texttt{less}\index{less}. Afsluiten kan met \emph{q}. Voor meer info, \texttt{man less}\index{man}.
+
+Wanneer er voortaan ``naar de documentatie'' wordt verwezen zal, tenzij nader gespecificeerd, de \emph{man page} van het betreffende onderwerp bedoeld worden. 
+
+\section{Libraries}
+\emph{Libraries}, of \emph{bibliotheken} zijn bestanden die verschillende \emph{functies} of \emph{subroutines} bevatten die kunnen worden gebruikt door andere software. Op deze manier kan een systeem op een plek bepaalde \emph{libaries} met taken aanbieden, welke dan door de rest van het systeem kunnen worden gebruikt. Niet ieder programma dat een bepaalde taak wil uitvoeren hoeft dan het wiel opnieuw uit te vinden. Het kan dan juist gebruik maken van de logica die al te vinden is in de aanwezige \emph{libraries}. 
+
+In de loop van de tijd zijn er enorm veel \emph{libaries} ontstaan. Als eerste komt dit omdat het ontwikkelen van applicaties veel sneller gaat. Ontwikkelaars kunnen immers code gebruiken die al bepaalde problemen oplost. 
+
+Een tweede oorzaak is de delegatie van verantwoordelijkheid. Wanneer ieder programma wat data moet \emph{comprimeren} gebruik kan maken van dezelfde \emph{libary} zal dit allemaal dezelfde typen bestanden opleveren. Dit is erg gemakkelijk in gebruik, het ontwikkelteam van de \emph{libaries} kan er vervolgens zorgen dat dit formaat bruikbaar blijft. Mochten er fouten gevonden worden in de implementatie, dan hoeft dit ook maar op \'{e}\'{e}n plek te worden opgelost, niet in ieder los programma wat wil comprimeren. 
+
+\subsection{Static libraries}
+Een \emph{static library}, of \emph{statische bibliotheek} is een \emph{libary} die tijdens de \emph{compilatie} van een programma wordt \emph{gelinkt}. Dit betekend dat de benodigde delen van de \emph{libary} worden samengevoegd met het programma. 
+
+\subsection{Shared libraries}
+In tegenstelling tot \emph{static libaries} zijn \emph{shared libaries} niet tijdens de \emph{compilatie} samengevoegd, maar zullen tijdens het draaien van een programma worden geopend indien nodig. 
+
+Dit gedrag heeft vele voordelen, maar de belangrijkste zijn ruimtebesparing en verminderd onderhoud. 
+
+In het geval van ruimte besparing is dit te verklaren doordat ieder programma geen eigen kopie van een bepaalde \emph{libary} hoeft te hebben. De programma's zijn netto dus kleiner. 
+
+De verbetering op het gebied van \emph{onderhoud} komt voort uit de gevolgen van de \emph{static libaries}. Mocht er een nieuwere versie van een \emph{libaryk} uitkomen omdat die veiligheidsfouten herstelt, zal dat betekenen dat ieder programma opnieuw \emph{gelinked} moet worden aan de \emph{libary}. 
+
+Wanneer een \emph{libary} niet \emph{static}, maar \emph{shared} is kan er eenvoudig weg een upgrade van de betreffende \emph{libary} worden geupgrade. Hierna zal ieder programma gebruik gaan maken van de nieuwe versie, zodra dit programma herstart is. Het hele systeem is dus gelijk veilig. 
+
+\subsubsection{ldconfig}
+Om te zorgen dat een systeem een idee heeft over de beschikbare \emph{shared libary} wordt er gebruik gemaakt van het configuratiebestand \emph{ld.so.conf}, te vinden in \emph{/etc/}. 
+
+Dit bestand wordt door \texttt{ldconfig}\index{ldconfig} gelezen, waarna er een cache met beschikbare \emph{libaries} wordt gemaakt. Deze cache kan worden gebruikt door het systeem om programma's de \emph{shared libary} te geven waar ze om vragen. 
+
+Het commando \texttt{ldconfig}\index{ldconfig} leest sowieso de vertrouwde \emph{libary} mappen \emph{/lib} en \emph{/usr/lib} uit, en zal vervolgens in het bestand \emph{/etc/ld.so.conf} kijken waar het nog meer naar \emph{libaries} moet kijken. 
+
+Mocht er dus een map met \emph{libaries} worden toegevoegd aan het systeem zal dat in dit bestand moeten gebeuren. Dit is erg eenvoudig, het bestand bevat alleen regels met locaties:
+\begin{lstlisting}
+kevin@slackbak:~$ cat /etc/ld.so.conf 
+/usr/local/lib
+/usr/i486-slackware-linux/lib
+/usr/lib/seamonkey
+\end{lstlisting}%$
+Een nieuwe locatie is dus snel toegevoegd. 

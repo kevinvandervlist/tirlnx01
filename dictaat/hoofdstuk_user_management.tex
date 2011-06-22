@@ -1,0 +1,217 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{User management}\index{user management}
+\emph{Linux} biedt uitgebreide mogelijkheden tot \emph{user management}. Omdat de dingen die in dit hoofdstuk worden uitgelegd voor meer \emph{Unices} gelden, zal het kennis zijn die altijd van pas zal komen. Wanneer de uitleg als kort wordt ervaren kan er door de lezer altijd worden teruggegrepen op de \texttt{man}\index{man} pages van het betreffende onderwerp. 
+
+\section{Commando's}
+Het is natuurlijk erg handig om de mogelijkheid te hebben om te kijken wie er momenteel op een systeem bezig is, of wie er ingelogd is geweest. Het zien, en eventueel veranderen van gebruikersinformatie behoord ook tot de mogelijkheden. 
+
+\subsection{who}\index{who}
+\texttt{who}\index{who} is een commando dat laat zien welke gebruikers er momenteel zijn ingelogd. Ook is te zien welke terminal ze gebruiken en wanneer ze zijn ingelogd: 
+\begin{lstlisting}
+kevin@slackbak:~$ who
+kevin    pts/0        2010-12-08 08:47 (145.24.213.121)
+paul     pts/1        2010-12-08 09:09 (145.24.213.56)
+\end{lstlisting}%$
+
+\subsection{w}\index{w}
+Het commando \texttt{w}\index{w} laat zien wie er is ingelogd en welke taak ze momenteel uitvoeren. Ook wordt de huidige \emph{load} van het systeem geprint: 
+\begin{lstlisting}
+kevin@slackbak:~$ w
+ 09:10:13 up 19:21,  2 users,  load average: 0.00, 0.00, 0.00
+USER  TTY   FROM           LOGIN@ IDLE  JCPU  PCPU WHAT
+kevin pts/0 145.24.213.121 08:47  0.00s 0.02s 0.00s w
+paul  pts/1 145.24.213.56  09:09  4.00s 0.04s 0.03s emacs
+\end{lstlisting}%$
+
+\subsection{last}\index{last}
+\texttt{last}\index{last} kan gebruikt worden om te zien welke gebruikers er wanneer hebben ingelogd in het systeem: 
+\begin{lstlisting}
+kevin@slackbak:~$ last
+paul  pts/1 145.24.213.56  Thu Dec 9 13:01 - 17:42 (04:40)    
+kevin pts/0 145.24.213.121 Thu Dec 9 12:52 - 13:06 (00:13)    
+kevin pts/0 145.24.213.121 Thu Dec 9 12:49 - 12:51 (00:02) 
+\end{lstlisting}%$
+
+\subsection{getent}\index{getent}
+Het commando \texttt{getent}\index{getent} wordt gebruikt om \emph{entries} uit administratieve databases te laten zien. Er kan dus gebruikersinformatie opgehaald worden. Welke databases er worden gebruikt hangt af van de configuratie van het systeem. Standaard zullen dit waarschijnlijk de bestanden \emph{/etc/passwd} en \emph{/etc/group} zijn voor gebruikers en groeps informatie. 
+
+Om de informatie van een gebruiker met de naam ``kevin'' te laten zien kan er het volgende gedaan worden: 
+\begin{lstlisting}
+kevin@slackbak:~$ getent passwd kevin
+kevin:x:1000:100:Kevin van der Vlist,,,:/home/kevin:/bin/bash
+\end{lstlisting}%$
+
+\subsection{usermod}\index{usermod}
+\texttt{usermod}\index{usermod} stelt een beheerder in staat om gebruikersinformatie aan te passen. Het onderstaande commando laat zien hoe de gebruiker ``kevin'' word toegevoegd aan de groep ``wheel'': 
+\begin{lstlisting}
+usermod -a -G wheel kevin
+\end{lstlisting}
+
+\subsection{chown}\index{chown}
+Het commando \texttt{chown}\index{chown} stelt een gebruiker in staat om de eigenaar van een bestand te veranderen. Dit kan natuurlijk alleen als de gebruiker voldoende rechten heeft voor de beoogde wijziging. Het is als ``root'' gebruiker altijd mogelijk om dit commando uit te voeren. 
+\begin{lstlisting}
+kevin@slackbak:~$ getent group projectgroep
+projectgroep:x:1001:kevin,paul
+kevin@slackbak:~$ mkdir map
+kevin@slackbak:~$ chmod 750 map
+kevin@slackbak:~$ ls -l
+total 4
+drwxrwx--- 2 kevin users 4096 Dec  8 10:45 map
+kevin@slackbak:~$ chown kevin:projectgroep map/
+kevin@slackbak:~$ ls -l
+total 4
+drwxrwx--- 2 kevin projectgroep 4096 2010-12-08 10:45 map/
+\end{lstlisting}
+Hier is te zien dat er een nieuwe map wordt aangemaakt waar de gebruikers ``paul'' en ``kevin'' in kunnen werken. Op deze manier kan er dus op een veilige manier informatie gedeeld worden. Een gebruiker buiten \emph{projectgroep} kan immers niet de map in. 
+
+\section{User Identifiers}\index{uid}
+Een \emph{user identifier}, of \emph{uid}, is een uniek getal dat een gebruiker op een \emph{Linux} systeem toegewezen krijgt. Dit getal wordt gebruikt om een gebruiker te identificeren, bijvoorbeeld als eigenaar van een bestand. Er kunnen dus geen twee gebruikers met hetzelfde \emph{uid} voorkomen. 
+
+De ``root'' gebruiker is een speciale gebruiker. Deze krijgt het \emph{uid} 0. Wanneer er in de \emph{source code} van de \emph{Linux kernel} wordt gekeken zal er ook zichtbaar zijn dat er bij belangrijke operaties wordt gekeken of het \emph{uid} van de actieve user 0 is. Er wordt hier wel onderscheid gemaakt tussen een \emph{real user id} en een \emph{effective user id}. 
+
+\subsection{Real User ID}\index{real uid}
+Het \emph{real uid} is het echte \emph{uid} van een gebruiker. Dit is het nummer wat te zien is wanneer de gebruikers informatie wordt opgevraagd. Dit is dus het nummer dat ook wordt gebruikt om bestanden aan de gebruiker te koppelen. 
+
+\subsection{Effective User ID}\index{effective uid}
+Het \emph{effective uid} is nagenoeg altijd hetzelfde als het \emph{real uid}. Wanneer het \emph{sticky bit} is ingesteld op een bepaald commando zal er pas iets veranderen. De gebruiker behoud dan zijn \emph{real uid}, maar veranderd zijn \emph{effective uid} naar het uid van de \emph{eigenaar} van het bestand. Laten we dit illustreren met een voorbeeld:
+\begin{lstlisting}
+kevin@slackbak:~$ ls -ln /usr/bin/passwd
+-rws--x--x 1 0 0 56255 Feb 28  2010 /usr/bin/passwd
+\end{lstlisting}%$
+Hier is te zien dat het passwd commando van de gebruiker met uid 0 is, dus van ``root''. We zien echter ook dat het \emph{set-uid} bit is aangezet\footnote{Dit is aangegeven met de s in de chmod waarde, zie \texttt{man chmod} voor meer informatie.}. Wanneer we dit als gebruiker uitvoeren zal tijdens het commando het volgende gelden:
+\begin{tabular}[t]{ll}
+  \hline
+  Wat & Waarde\\
+  \hline
+  Real UID & 1000\\
+  Effective UID & 0\\
+\end{tabular}\\
+Dit zorgt ervoor dat het programma toegang krijgt tot bestanden die eigenlijk alleen voor de ``root'' gebruiker beschikbaar zijn. 
+
+\section{File mode bits}\index{file mode bits}
+\emph{File mode bits} worden gebruikt om bij te houden of gebruikers rechten hebben om een bepaalde file of map te openen of te beschrijven. Deze rechten worden per bestand of map opgeslagen. Het manifesteert zich als volgt:
+\begin{lstlisting}
+kevin@slackbak:~$ ls -l /home/
+total 28
+drwxr-xr-x 2 root  root   4096 Feb 13  2010 ftp
+drwxr-x--x 3 kevin users  4096 Dec  8 09:39 kevin
+drwx------ 2 root  root  16384 Dec  6 13:25 lost+found
+drwx--x--x 2 paul  users  4096 Dec  8 09:10 paul
+-rw-r--r-- 1 kevin users 0 Dec  8 09:58 bestand
+\end{lstlisting}%$
+De eerste kolom is de belangrijkste in dit geval. Als voorbeeld wordt er naar de map \emph{kevin} gekeken:
+\begin{lstlisting}
+drwxr-x--x
+\end{lstlisting}
+De eerste letter, de \emph{d}, kan verschillende waardes hebben. Elke waarde staat voor een aparte categorie. Deze zijn als volgt:
+
+\begin{tabular}[t]{lll}
+  \hline
+  Wat & Betekenis\\
+  \hline
+  - & file\\
+  d & directory\\
+  b & block special file\\
+  c & character special file\\
+  l & symbolic link\\
+  p & named pipe\\
+  s & domain socket\\
+\end{tabular}\\
+Hierna word er naar groepen van 3 karakters gekeken. De eerste kolom staat voor de rechten van de eigenaar, de tweede groep staat voor de rechten van de groep en de derde staat voor de rechten voor world, de rest. De \emph{r} staat voor read, \emph{w} staat voor write en \emph{x} betekend execute. 
+Wanneer we de bovenstaande rechten erbij pakken, zien we het volgende:
+
+\begin{tabular}[t]{lll}
+  \hline
+  Wie & Rechten & Betekenis\\
+  \hline
+  owner & rwx & Lezen, schrijven en uitvoeren.\\
+  group & r-x & Lezen en uitvoeren.\\
+  other & \-\-x & Uitvoeren.\\
+\end{tabular}
+
+Aangezien het hier een map betreft heeft \emph{uitvoeren} een speciale betekenis, namelijk de rechten om een map te openen. Het is belangrijk om hier rekening mee te houden:
+\begin{lstlisting}
+kevin@slackbak:~$ mkdir map
+kevin@slackbak:~$ touch map/file
+kevin@slackbak:~$ ls -lhR map/
+map/:
+total 0
+-rw-r--r-- 1 kevin users 0 Dec  8 10:30 file
+kevin@slackbak:~$ chmod 600 map/
+kevin@slackbak:~$ ls -lhR map/
+map/:
+ls: cannot access map/file: Permission denied
+total 0
+-????????? ? ? ? ?            ? file
+\end{lstlisting}%$
+Zoals hierboven te zien is, kan het ``gekke'' resultaten opleveren wanneer een bestand genoeg rechten heeft, maar de map waar deze in staat niet. 
+
+Voor normale bestanden betekend de \emph{uitvoeren} optie dat het bestand uitgevoerd mag worden als shell script. Wanneer dit niet ingesteld is, zal je een \emph{permission denied} foutmelding krijgen op het bestand: 
+\begin{lstlisting}
+paul@slackbak:~$ ls -l
+total 0
+-rw-r--r-- 1 paul users 0 2010-12-15 23:37 test.sh
+paul@slackbak:~$ ./test.sh
+-bash: ./test.sh: Permission denied
+\end{lstlisting} 
+Ook als er gebruik gemaakt wordt van een taal zoals bijvoorbeeld \emph{perl}, \emph{python} of \emph{php} moet je de permissies op \emph{execute} zetten het bestand te draaien.\index{perl}\index{python}\index{php}
+
+\subsection{Waardes}
+De volgende waardes worden gebruikt om rechten aan te geven:\\
+\begin{tabular}[t]{lll}
+  \hline
+  waarde & binair & betekenis\\
+  \hline
+  1 & 001 & Uitvoeren\\
+  2 & 010 & Schrijven\\
+  4 & 100 & Lezen\\
+\end{tabular}
+
+Deze waardes worden in de praktijk gebruikt voor \texttt{chmod}\index{chmod}
+\begin{lstlisting}
+kevin@slackbak:~$ chmod 600 map
+\end{lstlisting}%$
+Dit commando stelt voor de categorie \emph{user} de rechten op 6, binair \emph{110}. Dit betekend dus lezen, schrijven en niet uitvoeren. De rest staat op 0, dus geen toegang. 
+
+\subsection{Gebruik van numerieke waarden}
+In veel voorbeelden, zowel in dit document als buiten dit document, zal er gebruikt gemaakt worden van de numerieke varianten, in plaats van de letters. Het is dus belangrijk dat je weet wat de verschillende numerieke waarden betekenen. 
+
+\subsection{umask}
+Om te kunnen be\"{i}nvloeden onder welke rechten een bestand word aangemaakt door een proces kan er gebruik gemaakt worden van een \texttt{umask}\index{umask}. Dit staat voor \textbf{u}ser \textbf{mask}. Het betekend dat een proces bepaalde bits gekoppeld aan de file mode bits weghaald. Dit word met een bitwise operatie gedaan, bijvoorbeeld \texttt{777 \& (\~{}022) = 755}. Dit is gemakkelijker te zien met een klein voorbeeld:
+\begin{lstlisting}
+kevin@slackbak /tmp/demo$ umask 755
+kevin@slackbak /tmp/demo$ touch file
+kevin@slackbak /tmp/demo$ umask 177
+kevin@slackbak /tmp/demo$ touch prive
+kevin@slackbak /tmp/demo$ umask 133
+kevin@slackbak /tmp/demo$ touch hoi
+kevin@slackbak /tmp/demo$ umask 100
+kevin@slackbak /tmp/demo$ touch dag
+kevin@slackbak /tmp/demo$ ls -lh
+total 0
+-rw-rw-rw- 1 kevin users 0 2011-04-13 10:24 dag
+-----w--w- 1 kevin users 0 2011-04-13 10:24 file
+-rw-r--r-- 1 kevin users 0 2011-04-13 10:24 hoi
+-rw------- 1 kevin users 0 2011-04-13 10:24 prive
+\end{lstlisting}%$
+
+Hier is te zien dat een \texttt{umask}\index{umask} van \texttt{755} resulteert in het weghalen van alle rechten, behalve \emph{read} (octaal 2). Wanneer het \texttt{umask}\index{umask} vervolgens word veranderd naar iets heel anders, bijvoorbeeld 100, blijkt dat er lees en schrijf rechten overblijven.

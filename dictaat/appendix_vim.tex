@@ -1,0 +1,71 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{VIMProved}\label{app.vim}
+VIM is VI-Improved en is gemaakt door Bram Molenaar. De VI editor is eenvoudig te verbeteren. Het commando 'vi'\index{vi} start op de meeste Linux systemen de VIM editor. Door de afwezigheid van de file '\customtilde/.vimrc'\index{\~{}/.vimrc} start VIM in de VI compatiable mode. Het enige wat dus gedaan moet worden is het aanmaken van een '\customtilde/.vimrc' bestand.
+
+\section{Navigatie in VIM}
+Om mensen toch enigzins op weg te helpen zullen hier een aantal erg veel gebruikte knoppen worden gedefinieerd.\\
+\begin{tabular}[t]{ll}
+  \hline
+  Wat & Betekenis\\
+  \hline
+  i & Start insert mode; je kan typen.\\
+  ESC & Einde editting mode; je kan commando's invoeren.\\
+  l & Een karakter naar rechts\footnotemark.\\
+  e & Een woord naar rechts\footnotemark.\\
+  0 & Begin van de regel.\\
+  A & Einde van de regel + insert mode\\
+  :e & Bestand openen.\\
+  w & Bestand opslaan.\\
+  d & Kill 'knip' alles vanaf cursor naar einde regel.\\
+  db & Delete een woord van cursor naar links.\\
+  dw & Delete een woord van cursor naar rechts.\\
+  u & Undo.\\
+  y & Yank; plakken.\\
+  q & VIM afsluiten\\
+\end{tabular}
+\footnotetext[1]{Dit geld ook voor h, k en j, een karakter naar links, boven en onder.}
+\footnotetext[2]{Dit geld ook voor b, k en j, een woord naar links, boven en onder.}
+\section{\~{}/.vimrc}
+Deze VIM configuratie file zorgt ervoor dat een aantal eigenschappen van VIM gaat werken.
+\begin{lstlisting}
+   :syntax on
+   set nocp
+   set ruler
+   set ts=4
+   set incsearch
+   set ignorecase
+   set cindent
+   set cinoptions=>0.5s,e0,n0,f0,{0,}0,ˆ0,:s,=s,ps,ts ,c3,+s,(2s,us,)20,∗30,gs,hs
+   set cinkeys=0{,0},:,0 #,!ˆ F,o,O,e
+   set t Co=16
+   set t Sf =ˆ[[3%dm
+   set t Sb=ˆ[[4%dm
+\end{lstlisting}
+\begin{itemize}
+  \item[1.] Syntax zorgt ervoor dat afhankelijk van de file extensie de juiste kleurcodering wordt gestart.
+  \item[2.] Ruler geeft onderaan het scherm aan in welke mode VIM momenteel staat.
+  \item[3.] ts=4 zet de tab-size op 4.
+  \item[4.] incsearch bestekend dat VIM direct gaat zoeken wanneer de eerste letter wordt weergeve. (Zoeken gaat via '/').
+  \item[5.] ignorecase zorgt ervoor dat tijdens het zoeken geen onderscheid tussen upper- en lower case wordt gemaakt.
+  \item[6.] De opties die met cin beginnen zijn voor het plaatsen van " en " en bepalen het gedrag van de 'TAB' toets.
+  \item[7.] De laatste drie regels zijn voor de kleuren. Het teken ˆ[[3\%dm  is de toetsencombinatie 'CTRL + v' en dan ESC. Als het teken dus uit 2 karakters bestaat moet deze worden vervangen door de genoemde toetscombinatie.
+\end{itemize}

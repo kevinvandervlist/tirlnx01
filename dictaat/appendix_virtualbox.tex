@@ -1,0 +1,37 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\chapter{Slackware installeren op VirtualBox}\label{app.virtualbox}
+Wanneer er geen computer vrij is om een nieuwe installatie op uit te voeren, is er de mogelijkheid om gebruik te maken van virtualisatie software. Een erg goed werkende, maar eenvoudige oplossing hiervoor is het gebruik van \emph{VirtualBox}\cite{bib.vbox}. Je kan hier eenvoudig een virtuele computer cre\"{e}eren waar je vervolgens de installatie op uit kunt voeren.
+
+\emph{Virtualbox} kan eenvoudig geinstalleerd worden. Op \emph{Windows}, \emph{Solaris} of \emph{OS X} download je de installer van de virtualbox site. Onder \emph{Linux} staat virtualbox meestal in de gebruikte package manager van de gebruikte distributie.
+
+De installatie van \emph{Slackware} is eigenlijk hetzelfde als normaal. Je mount de ISO van \emph{Slackware} in de instellingen van \emph{Virtualbox}. Hierna kan de VM gestart worden. Nu komt er een scherm krijgen met hierin de monitor over de VM. Volg hier gewoon alle normale installatie stappen uit hoofdstuk \ref{h.inst}.
+
+Zodra je klaar bent met de installatie moet je zelf de installatie CD unmounten via de instellingen. Wanneer je dit niet doet zal je iedere keer opnieuw booten in de installatie CD.
+
+\section{Problemen met netwerk/SSH}
+\emph{Virtualbox} maakt standaard gebruik van NAT. Je kan dus niet zomaar bij een virtuele machine komen. Het kan echter wenselijk zijn om bepaalde services van de VM te ontsluiten, zodat je bijvoorbeeld naar de virtuele machine kan SSH'en. Dit is heel simpel te bereiken door op de \emph{host} het volgende uit te voeren:
+\begin{lstlisting}
+kevin@iusaaset:~$ VBoxManage modifyvm "Slackware-current-i686" --natpf1 "guestssh,tcp,127.0.0.1,2022,,22"
+\end{lstlisting}%$
+\emph{Slackware-current-i686} is natuurlijk de naam van de VM. Verder staat hier dat je onder het label \emph{guestssh}, met het TCP protocol verkeer gericht op 127.0.0.1:2022 wil forwarden naar guest:22. 
+
+Voer dit uit als de VM uit staat, en na het aanzetten van de VM is hij beschikbaar.
