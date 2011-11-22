@@ -21,7 +21,7 @@
 \chapter{Installatie}\label{h.inst}
 In dit complete dictaat is er gekozen voor de \emph{Slackware} distributie. Dit is gedaan omdat het een van de oudste, nog ``levende'' distributies binnen de \emph{Linux} wereld is, maar ook omdat je in \emph{Slackware} ontzettend veel zelf moet doen.
 
-In dit hoofdstuk zal de lezer geholpen worden met het installeren van \emph{Slackware}, om precies te zijn met versie 13.1. De installatie kan plaatsvinden op een fysieke computer, maar ook het gebruik van \emph{VirtualBox} is erg handig. Zie voor het gebruik van \emph{Virtualbox} bijlage \ref{app.virtualbox}. 
+In dit hoofdstuk zal de lezer geholpen worden met het installeren van \emph{Slackware}, om precies te zijn met versie 13.37. De installatie kan plaatsvinden op een fysieke computer, maar ook het gebruik van \emph{VirtualBox} is erg handig. Zie voor het gebruik van \emph{Virtualbox} bijlage \ref{app.virtualbox}. 
 
 Wanneer er een nieuwe versie van \emph{Slackware} uit is als de gebruikte versie in dit document is het altijd aan te raden deze nieuwe versie te gebruiken.
 
@@ -169,7 +169,7 @@ Nu zal er ook nog gekozen moeten worden voor een map op de \emph{mirror server}.
   \caption{Mirror locatie}
   \label{fig:mirror2}
 \end{figure}
-\emph{Slackware} gaat nu controleren of de mirror gegevens kloppen en je krijgt de vraag of je het nogmaals wilt proberen of niet. Je kiest hier uiteraard voor niet.
+\emph{Slackware} gaat nu controleren of de mirror gegevens kloppen en je krijgt, als de gegevens kloppen, de vraag of je het nogmaals wilt proberen of niet. Je kiest hier uiteraard voor niet. 
 
 In dit scherm kan er gespecificeerd worden welke packages ge\"{i}nstalleerd moeten worden. De volgende packages zijn niet nodig, wij willen namelijk geen \emph{GUI} gebruiken. Deselecteer dus de volgende opties: 
 \begin{itemize}
@@ -267,7 +267,7 @@ Na een herstart (\texttt{reboot}\index{fdisk}) kan er ingelogd worden met ``root
 De standaard bootloader van \emph{Slackware} is \emph{LILO}. Omdat \emph{GRUB} gemakkelijker en uitgebreider is, gaan we in dit dictaat gebruik maken van \emph{GRUB}.
 
 \subsection{Downloaden en installeren GRUB}
-In het geval van \emph{GRUB} bestaat er een standaard package om te installeren, maar staat deze enkel in ``extra''. Dit kunnen we vinden in de \emph{PACKAGES.TXT}\footnote{\url{ftp://ftp.fu-berlin.de/unix/linux/mirrors/slackware/slackware-13.1/extra/PACKAGES.TXT}}. Download de \emph{package}, en installeer deze: 
+In het geval van \emph{GRUB} bestaat er een standaard package om te installeren, maar staat deze enkel in ``extra''. Dit kunnen we vinden in de \emph{PACKAGES.TXT}\footnote{\url{ftp://ftp.fu-berlin.de/unix/linux/mirrors/slackware/slackware-13.37/extra/PACKAGES.TXT}}. Download de \emph{package}, en installeer deze: 
 \begin{lstlisting}
 root@slackbak:~# cd /tmp/
 root@slackbak:/tmp# wget "ftp://ftp.fu-berlin.de/unix/linux/mirrors/slackware/slackware/extra/grub/grub-0.97-i486-9.txz"
