@@ -23,6 +23,7 @@ Een belangrijk deel in \emph{Linux} is de hardware aansturing. Zonder hardware z
 
 \section{Harde schijven}\index{libata}
 Harde schijven zijn een vrij belangrijk onderdeel binnen je computer. In het verleden werd er verschil gemaakt tussen \emph{IDE} (PATA)\index{IDE} en \emph{S-ATA}\index{SATA}. In de huidige kernel wordt er gebruik gemaakt van \emph{libata} waardoor alle schijven via dezelfde methode worden afgehandeld. Alle aanwezige schijven zullen een /dev/sdX device aangewezen krijgen, zoals bijvoorbeeld \emph{/dev/sda} voor de eerste schijf. Hierbij staat de X voor het schijfnummer in de vorm van een letter. Deze letter wordt toegewezen op de volgorde waarop  de schijven aanwezig zijn in de computer.
+Wanneer er partities aanwezig zijn op een harde schijf krijgen deze na \emph{/dev/sdX} een nummer toegewezen, zoals bijvoorbeeld \emph{dev/sda3} voor de derde partitie van de eerste harde schijf.
 
 \subsection{eSATA}\index{eSATA}
 Met de moderne hardware van tegenwoordig zijn er ook veel externe harde schijven. Veel schijven worden via \emph{USB} aangesloten, maar tegenwoordig zijn er ook schijven verkrijgbaar welke via \emph{eSATA} aangestuurd kunnen worden. \emph{eSATA} is op dezelfde standaard gebaseerd als \emph{SATA}, maar dan voor externe schijven. \emph{eSATA} schijven worden ook door \emph{libata} afgehandeld.
