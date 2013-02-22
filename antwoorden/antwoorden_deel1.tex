@@ -1,0 +1,46 @@
+% tirlnx01 - Materiaal om het keuzevak Linux te geven 
+% op de Hogeschool Rotterdam.
+% Copyright (C) 2010 - 2011  Paul Sohier, Kevin van der Vlist
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% Kevin van der Vlist - kevin@kevinvandervlist.nl
+% Paul Sohier - paul@paulsohier.nl
+
+\section{Week 1}
+
+Deze vragen gaan over de volgende hoofdstukken:
+\begin{itemize}
+\item[1.] Introductie
+\item[2.] Linux en Hardware
+\item[3.] Installatie
+\end{itemize}
+
+\begin{questions}
+
+\question[0] Installeer slackware
+\question[50] Wat zijn de namen van de eerste partitie van de eerste schijf, en van de derde partitie van de tweede schijf? Ga er vanuit dat er gebruik wordt gemaakt van libata. 
+\begin{solution}
+/dev/sda1\\
+/dev/sdb3
+\end{solution}
+\question[50] Maak een rescue optie voor GRUB zodat er geboot kan worden met \texttt{bash} als \emph{init daemon}. Geef het bestand + de aanpassingen die gemaakt zijn. \footnote{In sommige gevallen lijkt het erop dat de rescue mode niet meer werkt en is vastgelopen, dit is echter niet het geval, de rescue mode is al helemaal opgestart, maar daarna is nog een melding op STOUT geplaatst. Als je op enter drukt heb je vaak een werkende rescue mode.} 
+\begin{solution}
+\begin{lstlisting}
+kevin@slackbak:~$ cat /boot/grub/menu.lst
+  title Linux on (/dev/sda1)
+  root (hd0,0)
+  kernel /boot/vmlinuz root=/dev/sda1 ro vga=normal init=/bin/bash
+\end{lstlisting}%$
+\end{solution}
