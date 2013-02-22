@@ -37,6 +37,7 @@ build:
 	@${MAKE} -f latex-makefile clean
 	@${MV} ${FILE}.org.pdf ${FILE}.pdf
 	@${RM} latex-makefile
+	@${CP} ${FILE}.pdf ../pdf/${FILE}.pdf
 
 publish: build
 	@${SCP} ${FILE}.pdf ${DEST}

@@ -38,6 +38,7 @@ build:
 	@${MAKE} -f latex-makefile clean
 	@${MV} ${FILE}.org.pdf ${WEEK}.pdf
 	@${RM} latex-makefile
+	@${CP} ${WEEK}.pdf ../../pdf/${WEEK}.pdf
 
 publish: build
 	@${SCP} ${WEEK}.pdf ${DEST}

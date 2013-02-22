@@ -54,6 +54,7 @@ build:
 	@${RM} antwoorden_deel6.tex
 	@${RM} antwoorden_deel7.tex
 	@${RM} -rf bestanden
+	@${CP} ${FILE}.pdf ../pdf/${FILE}.pdf
 
 publish: build
 	@${SCP} ${FILE}.pdf ${DEST}
